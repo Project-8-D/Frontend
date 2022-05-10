@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="MQTTnet" Version="3.1.2" />
   </ItemGroup>
 
 </Project>
