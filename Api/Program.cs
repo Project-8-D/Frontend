@@ -1,5 +1,5 @@
-using Api.Database;
 using Api.Services;
+using Api.Services.MqttHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +12,12 @@ builder.Services.AddCors(options => {
 });
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<SqliteDbContext>();
-builder.Services.AddScoped<DatabaseService>();
+builder.Services.AddSingleton<DatabaseService>();
+builder.Services.AddSingleton<MqttService>();
 
 var app = builder.Build();
+
+app.Services.GetRequiredService<MqttService>().Start();
 
 // app.UseHttpsRedirection();
 
