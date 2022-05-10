@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[EnableCors]
 [ApiController]
 [Route("api")]
 public class TestController : ControllerBase
