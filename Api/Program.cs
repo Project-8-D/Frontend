@@ -1,3 +1,6 @@
+using Api.Database;
+using Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options => {
@@ -9,6 +12,8 @@ builder.Services.AddCors(options => {
 });
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<SqliteDbContext>();
+builder.Services.AddScoped<DatabaseService>();
 
 var app = builder.Build();
 
