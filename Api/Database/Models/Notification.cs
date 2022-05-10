@@ -1,0 +1,18 @@
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+
+namespace Api.Database.Models;
+
+public class Notification
+{
+    [Key]
+    public Guid Guid { get; set; } = Guid.NewGuid();
+    public ulong Time {get; set;}
+    public int NodeId {get; set;}
+    public double Latitude {get; set;}
+    public double Longitude {get; set;}
+    [JsonProperty("sound_type")]
+    public string SoundType {get; set;}
+    public int Probability {get; set;}
+    public string Sound {get; set;}
+}

@@ -5,14 +5,15 @@ namespace Api.Services
 {
     public class DatabaseService
     {
-        private readonly SqliteDbContext _dbContext;
-
-        public DatabaseService(SqliteDbContext dbContext)
+        public async Task AddNotificationAsync(Notification? notification)
         {
-            _dbContext = dbContext;
-        }
+            if (notification == null)
+                return;
 
-        public Test? GetTest()
-            => _dbContext.Test.FirstOrDefault();
+            var context = SqliteDbContext.Create();
+
+            context.Notifications.Add(notification);
+            await context.SaveChangesAsync();
+        }
     }
 }
