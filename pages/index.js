@@ -17,9 +17,6 @@ export default function Home() {
     .then(data => console.log(data));
 
   return (
-    <>
-      <h1>Home</h1>
-      <Map coords={coords} />
-    </>
+    <Map coords={coords} />
   );
 }
