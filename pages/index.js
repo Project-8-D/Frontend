@@ -13,9 +13,6 @@ export default function Home() {
   )
 
   return (
-    <>
-      <h1>Home</h1>
-      <Map coords={coords} />
-    </>
-  )
+    <Map coords={coords} />
+  );
 }
