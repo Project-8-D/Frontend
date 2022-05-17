@@ -14,6 +14,7 @@ builder.Services.AddCors(options => {
 builder.Services.AddControllers();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<MqttService>();
+builder.Services.AddSingleton<EmailService>();
 
 var app = builder.Build();
 

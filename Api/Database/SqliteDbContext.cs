@@ -6,6 +6,7 @@ namespace Api.Database
     public class SqliteDbContext : DbContext
     {
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Subscriber> Subscribers { get; set; }
 
         public static SqliteDbContext Create()
             => new();
