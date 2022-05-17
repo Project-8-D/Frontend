@@ -14,6 +14,10 @@ namespace Api.Services
 
             context.Notifications.Add(notification);
             await context.SaveChangesAsync();
+
+            // send email to subscribed users
+            EmailService emailService = new EmailService(this);
+            await emailService.MailSubscribers(notification);
         }
 
         public async Task SubscribeEmailAsync(string email)
