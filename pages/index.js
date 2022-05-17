@@ -1,22 +1,33 @@
 import dynamic from "next/dynamic";
+import { Component } from "react";
 
-// list of latitudes and longitudes
-const coords = [[51.626, 4.2], [51.624, 4.198], [51.624, 4.202]];
+export default class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      coords: []
+    };
+  }
 
-export default function Home() {
-  const Map = dynamic(
-    () => import("../components/Map"),
-    {
-      loading: () => <p>Loading...</p>,
-      ssr: false
-    }
-  );
+  render() {
+    const Map = dynamic(
+      () => import("../components/Map"),
+      {
+        loading: () => <p>Loading...</p>,
+        ssr: false
+      }
+    );
 
-  fetch('http://localhost:5235/api/test')
-    .then(response => response.json())
-    .then(data => console.log(data));
+    return (
+      <Map coords={this.state.coords}/>
+    );
+  }
 
-  return (
-    <Map coords={coords} />
-  );
+  componentDidMount() {
+    fetch("http://localhost:5235/api/notifications")
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ coords: data });
+      });
+  }
 }
