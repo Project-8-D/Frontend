@@ -29,5 +29,11 @@ export default class Home extends Component {
       .then(data => {
         this.setState({ coords: data });
       });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/serviceWorker.js")
+      })
+    }
   }
 }
