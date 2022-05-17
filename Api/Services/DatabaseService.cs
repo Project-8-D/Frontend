@@ -15,5 +15,7 @@ namespace Api.Services
             context.Notifications.Add(notification);
             await context.SaveChangesAsync();
         }
+
+        public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time).Take(10);
     }
 }
