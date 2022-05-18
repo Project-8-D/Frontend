@@ -5,19 +5,12 @@ namespace Api.Services
 {
     public class DatabaseService
     {
-        public async Task AddNotificationAsync(Notification? notification)
+        public async Task AddNotificationAsync(Notification notification)
         {
-            if (notification == null)
-                return;
-
             var context = SqliteDbContext.Create();
 
             context.Notifications.Add(notification);
             await context.SaveChangesAsync();
-
-            // send email to subscribed users
-            EmailService emailService = new EmailService(this);
-            await emailService.MailSubscribers(notification);
         }
 
         public async Task SubscribeEmailAsync(string email)

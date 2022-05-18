@@ -10,10 +10,12 @@ namespace Api.Services.MqttHandler;
 public class MqttService
 {
     private readonly DatabaseService _databaseService;
+    private readonly EmailService _emailService;
 
-    public MqttService(DatabaseService databaseService)
+    public MqttService(DatabaseService databaseService, EmailService emailService)
     {
         _databaseService = databaseService;
+        _emailService = emailService;
     }
 
     public void Start()
@@ -50,6 +52,12 @@ public class MqttService
 
     private async Task MessageHandler(MqttApplicationMessageReceivedEventArgs args)
     {
-        await _databaseService.AddNotificationAsync(JsonConvert.DeserializeObject<Notification>(Encoding.UTF8.GetString(args.ApplicationMessage.Payload)));
+        var notification = JsonConvert.DeserializeObject<Notification>(Encoding.UTF8.GetString(args.ApplicationMessage.Payload));
+
+        if (notification != null)
+        {
+            await _databaseService.AddNotificationAsync(notification);
+            _emailService.MailSubscribers(notification);
+        }
     }
 }
