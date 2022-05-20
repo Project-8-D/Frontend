@@ -20,6 +20,8 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<MqttService>();
 
+/*
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<SqliteDbContext>()
                 .AddDefaultTokenProviders();
@@ -42,7 +44,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
-});
+});*/
 
 var app = builder.Build();
 
@@ -54,8 +56,8 @@ app.UseCors();
 
 app.UseAuthorization();
 app.UseAuthentication();
-app.UseIdentityServer();
-
+/*app.UseIdentityServer();
+*/
 app.MapControllers();
 
 app.Run();
