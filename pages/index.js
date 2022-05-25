@@ -11,7 +11,7 @@ export default class Home extends Component {
 
   render() {
     const Dashboard = dynamic(
-      () => import("../components/Dashboard"),
+      () => import("../components/dashboard"),
       {
         loading: () => <p>Loading...</p>,
         ssr: false

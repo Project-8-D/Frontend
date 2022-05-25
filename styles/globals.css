@@ -60,12 +60,36 @@ button {
   @apply box-content p-1 text-gray-200 !important;
 }
 
-.cards{
-  @apply rounded-md bg-gray-900 py-4 px-16 align-middle
+.cards {
+  @apply rounded-md bg-gray-900 py-4 grow align-middle
+}
+
+.cards-title {
+  @apply flex justify-between px-5
+}
+
+h1 {
+  @apply text-lg
+}
+
+.cards-title a {
+  @apply text-pink-500
 }
 
 .cards-number {
   @apply text-center mt-2 text-4xl
+}
+
+.row-container {
+  @apply mt-4
+}
+
+.row {
+  @apply flex justify-between p-5 border-t border-gray-700 last:pb-1
+}
+
+.row-value {
+  @apply text-white/60
 }
 
 ::-webkit-scrollbar {
