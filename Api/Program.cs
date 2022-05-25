@@ -7,7 +7,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000","http://chengeta.xyz", "https://chengeta.xyz")
         .AllowCredentials();
     });
 });
@@ -18,7 +18,7 @@ builder.Services.AddScoped<DatabaseService>();
 
 var app = builder.Build();
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseCors();
 

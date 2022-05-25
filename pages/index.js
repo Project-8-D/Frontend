@@ -24,7 +24,7 @@ export default class Home extends Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:5235/api/notifications")
+    fetch("https://localhost:8082/api/notifications")
       .then(response => response.json())
       .then(data => {
         this.setState({ coords: data });
