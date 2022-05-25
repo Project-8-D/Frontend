@@ -12,7 +12,7 @@
     "Api": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "applicationUrl": "http://*:8001;https://*:8002",
+      "applicationUrl": "http://*:8081;https://*:8082",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

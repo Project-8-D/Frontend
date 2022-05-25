@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useState } from "react";
 import MenuItem from "./MenuItem";
 
@@ -20,7 +21,13 @@ export default function Navbar() {
     </div>
     {isOpen && <div className="fixed w-full h-full left-0 top-0 bg-black/75 z-9999" onClick={() => setIsOpen(false)}></div>}
     <div className={"fixed w-80 h-full left-0 top-0 bg-gray-800 z-9999 transition-transform -translate-x-full" + (isOpen ? " translate-x-0" : "")}>
-      <h2 className="text-2xl m-4 mb-1">Menu</h2>
+    <Image
+      src="/ranger.png"
+      width={68}
+      height={68}
+      className="rounded-full w-32 absolute"
+      alt="Avatar"
+    />
       <MenuItem icon="home" text="Home" href="/" />
     </div>
   </>

@@ -60,8 +60,41 @@ button {
   @apply box-content p-1 text-gray-200 !important;
 }
 
+.cards {
+  @apply rounded-md bg-gray-900 py-4 grow align-middle
+}
+
+.cards-title {
+  @apply flex justify-between px-5
+}
+
+h1 {
+  @apply text-lg
+}
+
+.cards-title a {
+  @apply text-pink-500
+}
+
+.cards-number {
+  @apply text-center mt-2 text-4xl
+}
+
+.row-container {
+  @apply mt-4
+}
+
+.row {
+  @apply flex justify-between p-5 border-t border-gray-700 last:pb-1
+}
+
+.row-value {
+  @apply text-white/60
+}
+
 input[type="email"], input[type="password"] {
   @apply p-5 w-[100%] h-10 my-4 focus:caret-pink-500 bg-white/5 hover:!bg-white/20 focus:bg-white/10 rounded-t-md border-b-2 border-gray-600 focus:border-b-[2px] focus:border-pink-500 focus:outline-none
+
 }
 
 ::-webkit-scrollbar {

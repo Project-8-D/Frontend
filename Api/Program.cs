@@ -6,10 +6,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(policy => 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000","http://chengeta.xyz", "https://chengeta.xyz")
         .AllowCredentials()
         .AllowAnyHeader();
     });
