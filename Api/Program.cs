@@ -10,7 +10,8 @@ builder.Services.AddCors(options => {
     options.AddDefaultPolicy(policy => 
     {
         policy.WithOrigins("http://localhost:3000")
-        .AllowCredentials();
+        .AllowCredentials()
+        .AllowAnyHeader();
     });
 });
 
@@ -39,6 +40,7 @@ app.Services.GetRequiredService<MqttService>().Start();
 
 app.UseCors();
 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 

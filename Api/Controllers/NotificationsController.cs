@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
@@ -17,6 +18,7 @@ public class NotificationsController : ControllerBase
     }
 
     [HttpGet("notifications")]
+    [Authorize]
     public IActionResult Get()
     {
         return Ok(_databaseService.GetNotifications());

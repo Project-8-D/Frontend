@@ -18,7 +18,21 @@ export default class Login extends Component {
 
     async handleSubmit(e) {
         e.preventDefault();
+        await fetch("https://localhost:8002/api/login", {
+            method: "POST",
+            credentials: 'include',
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.state)
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then((body) => {
+                    localStorage.setItem('token', body)
+                    window.location.pathname = "/"
+                })
+            }
+        });
     }
+
     render() {
         return (
             <div className="block mx-auto w-fit">
