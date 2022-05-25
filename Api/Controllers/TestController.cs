@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
 [EnableCors]
 [ApiController]
-[Route("api")]
+[Route("api/test")]
 public class TestController : ControllerBase
 {
-
-    [HttpGet("test")]
+    [HttpGet]
+    [Authorize]
     public IActionResult Get()
     {
         return Ok(new

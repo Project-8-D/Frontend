@@ -1,9 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  @apply p-0 m-0 font-sans;
 }
 
 a {
@@ -13,4 +14,96 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+button {
+  @apply inline-flex items-center justify-center;
+}
+
+.material-icons-round {
+  @apply select-none align-middle;
+}
+
+.scrollList span .material-icons-round {
+  @apply text-gray-400 text-xl;
+}
+
+.expandable {
+  @apply h-0 overflow-hidden transition-[height];
+  transition-timing-function: linear;
+}
+
+.expanded {
+  height: 7.5em;
+}
+
+.leaflet-container {
+  @apply bg-gray-900 !important;
+}
+
+@media not print {
+  .leaflet-tile {
+    filter: invert(1) hue-rotate(300deg) brightness(1.2) saturate(.7) !important;
+  }
+}
+
+.leaflet-control-zoom {
+  @apply flex flex-col shadow-[rgba(0,0,0,.25)] shadow-lg print:hidden !important;
+}
+
+.leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+  border: none !important;
+  @apply rounded-full bg-gray-800 !important;
+}
+
+.leaflet-control-zoom-in, .leaflet-control-zoom-out {
+  @apply box-content p-1 text-gray-200 !important;
+}
+
+.cards {
+  @apply rounded-md bg-gray-900 py-4 grow align-middle
+}
+
+.cards-title {
+  @apply flex justify-between px-5
+}
+
+h1 {
+  @apply text-lg
+}
+
+.cards-title a {
+  @apply text-pink-500
+}
+
+.cards-number {
+  @apply text-center mt-2 text-4xl
+}
+
+.row-container {
+  @apply mt-4
+}
+
+.row {
+  @apply flex justify-between p-5 border-t border-gray-700 last:pb-1
+}
+
+.row-value {
+  @apply text-white/60
+}
+
+input[type="email"], input[type="password"] {
+  @apply p-5 w-[100%] h-10 my-4 focus:caret-pink-500 bg-white/5 hover:!bg-white/20 focus:bg-white/10 rounded-t-md border-b-2 border-gray-600 focus:border-b-[2px] focus:border-pink-500 focus:outline-none
+
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #979797;
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 50vh;
 }

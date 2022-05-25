@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { Component } from "react";
 
-export default class Home extends Component {
+export default class Sightings extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,8 +17,8 @@ export default class Home extends Component {
       window.location.pathname = "/login"
     }
     else {
-      const Dashboard = dynamic(
-        () => import("../components/dashboard"),
+      const Map = dynamic(
+        () => import("../components/Map"),
         {
           loading: () => <p>Loading...</p>,
           ssr: false
@@ -26,7 +26,7 @@ export default class Home extends Component {
       );
   
       return (
-        <Dashboard coords={this.state.coords}/>
+        <Map coords={this.state.coords}/>
       );
     }
   }
