@@ -7,24 +7,37 @@ export default class Home extends Component {
     this.state = {
       coords: []
     };
+
+    if (typeof window !== 'undefined')
+      this.token = localStorage.getItem('token')
   }
 
   render() {
-    const Dashboard = dynamic(
-      () => import("../components/dashboard"),
-      {
-        loading: () => <p>Loading...</p>,
-        ssr: false
-      }
-    );
-
-    return (
-      <Dashboard coords={this.state.coords}/>
-    );
+    if (!this.token && typeof window !== 'undefined') {
+      window.location.pathname = "/login"
+    }
+    else {
+      const Map = dynamic(
+        () => import("../components/Map"),
+        {
+          loading: () => <p>Loading...</p>,
+          ssr: false
+        }
+      );
+  
+      return (
+        <Map coords={this.state.coords}/>
+      );
+    }
   }
 
   componentDidMount() {
-    fetch("https://localhost:8082/api/notifications")
+    console.log(this.token)
+    fetch("https://localhost:8002/api/notifications", {
+      headers: new Headers({
+          'Authorization': 'Bearer ' + this.token
+      })
+    })
       .then(response => response.json())
       .then(data => {
         this.setState({ coords: data });
