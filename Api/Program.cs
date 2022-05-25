@@ -10,7 +10,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000","http://chengeta.xyz", "https://chengeta.xyz")
+        policy.WithOrigins("http://localhost:3000","https://www.chengeta.xyz", "https://chengeta.xyz")
         .AllowCredentials()
         .AllowAnyHeader();
     });
