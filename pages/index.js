@@ -10,8 +10,8 @@ export default class Home extends Component {
   }
 
   render() {
-    const Map = dynamic(
-      () => import("../components/Map"),
+    const Dashboard = dynamic(
+      () => import("../components/Dashboard"),
       {
         loading: () => <p>Loading...</p>,
         ssr: false
@@ -19,7 +19,7 @@ export default class Home extends Component {
     );
 
     return (
-      <Map coords={this.state.coords}/>
+      <Dashboard coords={this.state.coords}/>
     );
   }
 

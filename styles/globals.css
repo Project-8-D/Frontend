@@ -60,6 +60,14 @@ button {
   @apply box-content p-1 text-gray-200 !important;
 }
 
+.cards{
+  @apply rounded-md bg-gray-900 py-4 px-16 align-middle
+}
+
+.cards-number {
+  @apply text-center mt-2 text-4xl
+}
+
 ::-webkit-scrollbar {
   width: 12px;
 }
