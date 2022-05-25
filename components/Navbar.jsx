@@ -29,6 +29,7 @@ export default function Navbar() {
       alt="Avatar"
     />
       <MenuItem icon="home" text="Home" href="/" />
+      <MenuItem icon="map" text="Sightings" href="/sightings" />
     </div>
   </>
 }
