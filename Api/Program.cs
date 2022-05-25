@@ -1,8 +1,6 @@
-using Api.Database;
 using Api.Services;
 using Api.Services.MqttHandler;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -12,7 +10,8 @@ builder.Services.AddCors(options => {
     options.AddDefaultPolicy(policy => 
     {
         policy.WithOrigins("http://localhost:3000")
-        .AllowCredentials();
+        .AllowCredentials()
+        .AllowAnyHeader();
     });
 });
 
@@ -20,27 +19,18 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<MqttService>();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<SqliteDbContext>()
-                .AddDefaultTokenProviders();
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        ValidateIssuer = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        ValidateIssuer = true,
+        LifetimeValidator = (_, expires, _, _) => expires > DateTime.Now,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"]
     };
 });
 
@@ -48,13 +38,11 @@ var app = builder.Build();
 
 app.Services.GetRequiredService<MqttService>().Start();
 
-// app.UseHttpsRedirection();
-
 app.UseCors();
 
-app.UseAuthorization();
+app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseIdentityServer();
+app.UseAuthorization();
 
 app.MapControllers();
 
