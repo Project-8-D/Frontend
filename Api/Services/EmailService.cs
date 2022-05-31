@@ -26,20 +26,23 @@ public class EmailService
         var mail = new MailMessage();
         mail.From = new MailAddress("chengeta_guns@hotmail.com");
 
-        foreach (var user in context.Subscribers)
+        foreach (var subscriber in context.Subscribers)
         {
-            mail.To.Add(user.Email);
+            mail.To.Add(subscriber.Email);
         }
 
-        mail.Subject = "Gunshot notification";
+        var epoch = new DateTime(1970, 1, 1, 0, 0, 0);
+        epoch = epoch.AddSeconds(notification.Time).ToLocalTime();
+        var dt = epoch.ToString("HH:mm");
+
+        mail.Subject = $"{notification.SoundType} detection - {dt}";
         mail.IsBodyHtml = true;
         string htmlBody;
-        htmlBody = @"
-            <h1>Title</h1>
-            <p>Notification message</p>
-            <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ'>Link to something</a>
+        htmlBody = @$"
+            <h1>{notification.SoundType}</h1>
+            <p>A {notification.SoundType} has been detected at<br>latutude: {notification.Latitude}<br>longitude: {notification.Longitude}</p>
+            <a href='https://www.chengeta.xyz'>Go to dashboard</a><br>
             <img src='https://ichef.bbci.co.uk/images/ic/976xn/p08h0lkd.jpg' style = 'width: 500px'>
-            <p>Footer message</p>
         ";
         mail.Body = htmlBody;
         SmtpServer.Port = 587;

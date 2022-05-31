@@ -13,23 +13,19 @@ namespace Api.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task SubscribeEmailAsync(string email)
-        {
+        public async Task ToggleSubscription(string email) {
             var context = SqliteDbContext.Create();
 
-            context.Subscribers.Add(new Subscriber{Email=email});
-            await context.SaveChangesAsync();
-        }
-
-        public async Task UnsubscribeEmailAsync(string email)
-        {
-            var context = SqliteDbContext.Create();
-
-            if (context.Subscribers.FirstOrDefault(x => x.Email == email) is Subscriber subscriber)
+            if (context.Subscribers.FirstOrDefault(x => x.Email == email) is Subscriber subscriber) 
             {
                 context.Subscribers.Remove(subscriber);
-                await context.SaveChangesAsync();
+            } 
+            else 
+            {
+                context.Subscribers.Add(new Subscriber{Email=email});
             }
+
+            await context.SaveChangesAsync();
         }
 
         public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time).Take(10);

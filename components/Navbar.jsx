@@ -1,10 +1,56 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MenuItem from "./MenuItem";
+
+function subscribe(subscribed, setSubscribed) {
+    // subscribes the current logged in user
+    if (typeof localStorage === "undefined"){
+        return
+    }
+
+    var url = "https://localhost:8082/api/subscribe"
+    fetch(url, {
+        method: 'POST',
+        headers: new Headers({
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        })
+    }).then(
+        res => {
+            if (res.status === 200) {
+                setSubscribed(!subscribed)
+            }
+        }
+    )
+}
+
+async function isSubscribed() {
+    var sub
+    await fetch("https://localhost:8082/api/subscribed", {
+            method: 'GET',
+            headers: new Headers({
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            })
+        }).then(
+            res => res.text
+        ).then(
+            text => {
+                sub = text === "Subscribed"
+            }
+        )
+
+    return sub
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [subscribed, setSubscribed] = useState(null);
 
+  useEffect(() => {
+    isSubscribed().then(
+        value => setSubscribed(value)
+    )
+  }, [])
+  
   return  <>
     <div className="h-12 bg-gray-900 relative w-full shadow-[rgba(0,0,0,.25)] shadow-lg print:hidden">
       <button className="w-12 h-12" onClick={() => setIsOpen(true)}>
@@ -14,8 +60,8 @@ export default function Navbar() {
         <button className="w-12 h-12" onClick={() => window.print()}>
           <i className="material-icons-round">print</i>
         </button>
-        <button className="w-12 h-12">
-          <i className="material-icons-round">notifications</i>
+        <button className="w-12 h-12" onClick={() => subscribe(subscribed, setSubscribed)} disabled={subscribed === null ? true : undefined}>
+          <i className="material-icons-round">{subscribed ? "notifications_off" : "notifications"}</i>
         </button>
       </div>
     </div>
