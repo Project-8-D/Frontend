@@ -18,7 +18,7 @@ export default class Home extends Component {
     }
     else {
       const Dashboard = dynamic(
-        () => import("../components/dashboard"),
+        () => import("../components/Dashboard"),
         {
           loading: () => <p>Loading...</p>,
           ssr: false
