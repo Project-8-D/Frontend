@@ -60,6 +60,16 @@ button {
   @apply box-content p-1 text-gray-200 !important;
 }
 
+.leaflet-div-icon {
+  @apply !bg-transparent !border-none;
+  transition-property: width, height, margin;
+  transition-duration: .2s;
+}
+
+.leaflet-div-icon svg {
+  @apply w-full h-full;
+}
+
 .cards {
   @apply rounded-md bg-gray-900 py-4 grow align-middle
 }
