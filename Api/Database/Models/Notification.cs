@@ -15,4 +15,5 @@ public class Notification
     public string SoundType {get; set;}
     public int Probability {get; set;}
     public string Sound {get; set;}
+    public bool Resolved {get; set;} = false;
 }
