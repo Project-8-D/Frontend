@@ -41,19 +41,23 @@ export default function Dashboard({ coords }){
 
   return(
     <div className="mt-5 w-100 md:w-8/12 mx-auto">
-      <StatusCards />
+      <StatusCards coords={coords}/>
 
       <MapContainer bounds={[[-1.3402098002785028, 22.0660400390625], [-3.1021210008142988, 20.676269531250004]]} scrollWheelZoom={false} className="h-96 w-full md:rounded-md mt-12" attributionControl={false}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?layers=C"
         />
-        {coords.map((coord, i) => <Marker position={[coord.latitude, coord.longitude]} key={i} icon={coord == c ? selectedIcon : icon}></Marker>)}
+        {coords.map((coord, i) => {
+          if (i < 10)
+            return <Marker position={[coord.latitude, coord.longitude]} key={i} icon={coord == c ? selectedIcon : icon}></Marker>
+        }
+        )}
         <FetchCoords />
       </MapContainer>
 
       <div className="flex flex-nowrap gap-12 justify-between mt-8">
-        <SightingsCard />
+        <SightingsCard coords={coords}/>
 
         <SightingsAccuracyCard />
       </div>
