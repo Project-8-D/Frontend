@@ -59,7 +59,7 @@ export default function Dashboard({ coords }){
       <div className="flex flex-nowrap gap-12 justify-between mt-8">
         <SightingsCard coords={coords}/>
 
-        <SightingsAccuracyCard />
+        <SightingsAccuracyCard coords={coords}/>
       </div>
     </div>
   )

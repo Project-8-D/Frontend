@@ -11,16 +11,16 @@ export default function SightingsCard({ coords }) {
             </div>
             <div className="row-container">
                 <div className="row">
-                    <div>Resolved sightings</div>
-                    <div className="row-value">{resolved.length}</div>
-                </div>
-                <div className="row">
                     <div>Unresolved sightings</div>
                     <div className="row-value">{unresolved.length}</div>
                 </div>
                 <div className="row">
                     <div>Sightings under 50% accuracy</div>
                     <div className="row-value">{lowAccuracy.length}</div>
+                </div>
+                <div className="row">
+                    <div>Resolved sightings</div>
+                    <div className="row-value">{resolved.length}</div>
                 </div>
             </div>
         </div>
