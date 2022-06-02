@@ -4,8 +4,8 @@ export default function StatusCards({ coords }) {
     return (
         <div className="flex flex-nowrap gap-12 justify-between">
             <div className="cards">
-                <h1 className="text-center">Unresolved</h1>
-                <p className="cards-number">{unresolved.length}</p>
+                <h1 className="text-center">Resolved</h1>
+                <p className="cards-number">{resolved.length}</p>
             </div>
             <div className="cards">
                 <h1 className="text-center">Overdue</h1>
@@ -13,7 +13,7 @@ export default function StatusCards({ coords }) {
             </div>
             <div className="cards">
                 <h1 className="text-center">Open</h1>
-                <p className="cards-number">{resolved.length}</p>
+                <p className="cards-number">{unresolved.length}</p>
             </div>
         </div>
     )
