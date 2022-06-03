@@ -1,5 +1,5 @@
-import dynamic from "next/dynamic";
 import { Component } from "react";
+import Dashboard from "../components/Dashboard";
 
 export default class Home extends Component {
   constructor(props) {
@@ -17,22 +17,11 @@ export default class Home extends Component {
       window.location.pathname = "/login"
     }
     else {
-      const Dashboard = dynamic(
-        () => import("../components/Dashboard"),
-        {
-          loading: () => <p>Loading...</p>,
-          ssr: false
-        }
-      );
-  
-      return (
-        <Dashboard coords={this.state.coords}/>
-      );
+      return <Dashboard coords={this.state.coords}/>;
     }
   }
 
   componentDidMount() {
-    console.log(this.token)
     fetch("https://localhost:8082/api/notifications", {
       headers: new Headers({
           'Authorization': 'Bearer ' + this.token

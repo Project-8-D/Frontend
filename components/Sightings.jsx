@@ -1,0 +1,214 @@
+import { useState, useEffect, Fragment } from "react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+
+const Map = dynamic(
+  () => import("../components/Map"),
+  {
+    loading: () => <p>Loading...</p>,
+    ssr: false
+  }
+);
+
+export default function Sightings({ coords }) {
+  const [map, setMap] = useState(null);
+  const [current, setCurrent] = useState(null);
+  const [playing, setPlaying] = useState(null);
+  const [audio, setAudio] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [filtersOpened, setFiltersOpened] = useState(false);
+  const [filterSoundType, setFilterSoundType] = useState("");
+  const [filterOpen, setFilterOpen] = useState("yes");
+  const [filterProbabilityMin, setFilterProbabilityMin] = useState(0);
+  const [filterProbabilityMax, setFilterProbabilityMax] = useState(100);
+  const [enableFilterAge, setEnableFilterAge] = useState(false);
+  const [filterAge, setFilterAge] = useState(1);
+  const [orderBy, setOrderBy] = useState("time");
+  const [orderDesc, setOrderDesc] = useState(true);
+  const [enableFilterLimit, setEnableFilterLimit] = useState(true);
+  const [filterLimit, setFilterLimit] = useState(10);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(router.asPath.split("?")[1]);
+
+    const coord = params.get("coord");
+    if (coord) {
+      const found = coords.find(c => c.guid === coord);
+      if (found) setCurrent(found);
+    }
+
+    const soundType = params.get("soundtype");
+    if (soundType) setFilterSoundType(soundType);
+
+    const open = params.get("open");
+    if (open) setFilterOpen(open);
+
+    const limit = params.get("limit");
+    if (limit === "off") {
+      setEnableFilterLimit(false);
+    } else if (limit) {
+      setFilterLimit(parseInt(limit));
+    }
+
+    const maxAge = params.get("maxage");
+    if (maxAge) {
+      setEnableFilterAge(true);
+      setFilterAge(parseInt(maxAge));
+    }
+
+    const probmax = params.get("probmax");
+    if (probmax) setFilterProbabilityMax(probmax);
+  }, [coords]);
+
+  function coordClick(coord, filtered) {
+    const same = coord == current;
+    setCurrent(same ? null : coord);
+
+    if (same) {
+      map.flyToBounds([[-4, 19],[0.4, 23.5]]);
+    } else {
+      map.flyTo([coord.latitude, coord.longitude]);
+      const el = document.querySelectorAll(".scrollList > div")[filtered.indexOf(coord)];
+      if (el) {
+        if (el.scrollIntoViewIfNeeded)
+          el.scrollIntoViewIfNeeded({ behavior: "smooth" });
+        else
+          el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }
+
+  function playClick(e, coord) {
+    e.stopPropagation();
+
+    if (playing == coord) {
+      setPlaying(null);
+      audio?.pause();
+    } else {
+      e.target.disabled = true;
+      audio?.pause();
+      setAudio(null);
+      const a = new Audio(coord.sound);
+      a.addEventListener("ended", () => setPlaying(null));
+      setProgress(0);
+      a.addEventListener("timeupdate", () => setProgress(a.currentTime / a.duration * 360));
+      a.play().then(() => {
+        setPlaying(coord);
+        setAudio(a);
+        e.target.disabled = false;
+      });
+    }
+  }
+
+  let filtered = coords.filter(coord => {
+    return (
+      filterSoundType === "" || coord.soundType === filterSoundType) &&
+      (!enableFilterAge || coord.time*1000 >= Number(new Date()) - filterAge*1000*60*60) &&
+      coord.probability >= filterProbabilityMin && coord.probability <= filterProbabilityMax &&
+      (filterOpen === "both" || coord.resolved === (filterOpen === "no"));
+  }).sort((a, b) => {
+    switch (orderBy) {
+      case "time":
+        return b.time - a.time;
+      case "accuracy":
+        return b.probability - a.probability;
+      case "latitude":
+        return b.latitude - a.latitude;
+      case "longitude":
+        return b.longitude - a.longitude;
+    }
+  });
+
+  if (!orderDesc) filtered.reverse();
+
+  filtered = filtered.slice(0, enableFilterLimit ? filterLimit : coords.length);
+
+  return <div className="flex flex-col lg:flex-row gap-4 m-4">
+    <div className="h-[50vh] lg:h-[calc(100vh-5rem)] w-full lg:w-6/12">
+      <Map coords={filtered} current={current} coordClick={coordClick} setParentMap={setMap}/>
+    </div>
+    <div className="lg:w-6/12 lg:h-[calc(100vh-5rem)] bg-gray-900 rounded-md">
+      <div className="flex justify-between items-center relative box-content shadow-[rgba(0,0,0,.25)] shadow-lg print:shadow-none">
+          <h2 className="text-xl pl-4 flex items-center gap-3">{filtersOpened ? "Filters" : "List"} <span className="text-base text-white/50">{filtered.length}/{coords.length}</span></h2>
+          <button className="print:hidden justify-self-end w-12 h-12" onClick={() => setFiltersOpened(!filtersOpened)}>
+            <i className="material-icons-round">{filtersOpened ? "view_list" : "filter_list"}</i>
+          </button>
+      </div>
+      <div className="scrollList overflow-y-auto h-[calc(100vh-5.5rem-50vh-3.75rem)] lg:h-[calc(100vh-9rem)] print:!h-auto">
+        {filtersOpened ? <div className="m-6 grid [grid-template-columns:max-content_max-content] gap-4 items-center w-max mx-auto">
+          <label htmlFor="soundtype">type</label>
+          <select value={filterSoundType} onChange={e => setFilterSoundType(e.target.value)} id="soundtype">
+            <option value="">all</option>
+            <option value="animal">animal</option>
+            <option value="gunshot">gunshot</option>
+            <option value="vehicle">vehicle</option>
+            <option value="unknown">unknown</option>
+          </select>
+
+          <label htmlFor="open">open</label>
+          <select value={filterOpen} onChange={e => setFilterOpen(e.target.value)} id="open">
+            <option value="yes">yes</option>
+            <option value="no">no</option>
+            <option value="both">both</option>
+          </select>
+
+          <label>probability</label>
+          <div className="flex items-center justify-between">
+            <input type="number" min={0} max={filterProbabilityMax} value={filterProbabilityMin} onChange={e => setFilterProbabilityMin(e.target.value)} className="w-5/12"/>
+            &#8211;
+            <input type="number" min={filterProbabilityMin} max={100} value={filterProbabilityMax} onChange={e => setFilterProbabilityMax(e.target.value)} className="w-5/12"/>
+          </div>
+
+          <label htmlFor="age" className={enableFilterAge ? "" : "opacity-50"}>max age</label>
+          <div className="flex items-center">
+            <input type="checkbox" checked={enableFilterAge} onChange={e => setEnableFilterAge(e.target.checked)}/>
+            <input type="number" min={0} value={filterAge} onChange={e => setFilterAge(e.target.value)} className="disabled:opacity-50" disabled={enableFilterAge ? undefined : true} id="age"/>
+            <span className="ml-1">h</span>
+          </div>
+
+          <label htmlFor="order">order by</label>
+          <div className="flex items-center">
+          <button onClick={() => setOrderDesc(!orderDesc)} className="select-none mr-1"><span className="material-icons-round text-3xl w-6 -ml-1 mr-1">{orderDesc ? "arrow_downward" : "arrow_upward"}</span></button>
+          <select value={orderBy} onChange={e => setOrderBy(e.target.value)} className="grow" id="order">
+            <option value="time">time</option>
+            <option value="accuracy">accuracy</option>
+            <option value="latitude">latitude</option>
+            <option value="longitude">longitude</option>
+          </select>
+          </div>
+
+          <label htmlFor="limit" className={enableFilterLimit ? "" : "opacity-50"}>limit</label>
+          <div className="flex items-center">
+            <input type="checkbox" checked={enableFilterLimit} onChange={e => setEnableFilterLimit(e.target.checked)}/>
+            <input type="number" min={0} value={filterLimit} onChange={e => setFilterLimit(e.target.value)} className="grow disabled:opacity-50" disabled={enableFilterLimit ? undefined : true} id="limit"/>
+          </div>
+        </div> : 
+        filtered.map((coord, i) => (
+          <Fragment key={coord.guid}>
+            <div onClick={() => coordClick(coord, filtered)} className={"flex py-2 pr-4 hover:bg-gray-600 print:text-black break-inside-avoid" + (coord == current ? " bg-gray-700 print:font-bold" : "")}>
+              <i className={"material-icons-round h-min m-4 text-3xl transition-transform" + (coord == current ? " rotate-180" : "")}>place</i>
+              <span className="flex-grow-[1] mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+                <span className="font-bold">Point #{i + 1}</span>
+                <br />
+                <i className="material-icons-round" title="coordinates">my_location</i> {coord.longitude}, {coord.latitude}
+                <div className={"h-0 overflow-hidden transition-[height] [transition-timing-function:linear]" + (coord == current ? " expanded" : "")}>
+                  <i className="material-icons-round" title="time">schedule</i> {new Date(coord.time*1000).toLocaleString()}<br />
+                  <i className="material-icons-round" title="node id">scatter_plot</i> {coord.nodeId.toString()}<br />
+                  <i className="material-icons-round" title="sound type">category</i> {coord.soundType}<br />
+                  <i className="material-icons-round" title="probability">percent</i> {coord.probability}<br />
+                </div>
+              </span>
+              <button className="w-12 h-12 mt-[10px] ml-4 min-w-[3rem] rounded-full bg-pink-500 disabled:bg-pink-500/50 print:hidden transition-[background]" onClick={(e) => playClick(e, coord)} style={{ background: coord == playing ? `conic-gradient(#ec4899 ${progress}deg, #be185d ${progress+1}deg)` : "" }}>
+                <i className="material-icons-round text-[#8e2b5c]/100">{coord == playing ? "stop" : "play_arrow"}</i>
+              </button>
+            </div>
+            {i < coords.length - 1 && <hr className="border-0 h-[2px] bg-gray-800 w-[calc(100%-2rem)] m-auto"/>}
+          </Fragment>
+        ))
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import { Component } from "react";
+import S from "../components/Sightings";
 
 export default class Sightings extends Component {
   constructor(props) {
@@ -17,22 +18,11 @@ export default class Sightings extends Component {
       window.location.pathname = "/login"
     }
     else {
-      const Map = dynamic(
-        () => import("../components/Map"),
-        {
-          loading: () => <p>Loading...</p>,
-          ssr: false
-        }
-      );
-  
-      return (
-        <Map coords={this.state.coords}/>
-      );
+      return <S coords={this.state.coords}/>;
     }
   }
 
   componentDidMount() {
-    console.log(this.token)
     fetch("https://localhost:8082/api/notifications", {
       headers: new Headers({
           'Authorization': 'Bearer ' + this.token

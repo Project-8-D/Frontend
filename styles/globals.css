@@ -47,13 +47,17 @@ button {
   }
 }
 
+.leaflet-container {
+  @apply w-full h-full rounded-md;
+}
+
 .leaflet-control-zoom {
-  @apply flex flex-col shadow-[rgba(0,0,0,.25)] shadow-lg print:hidden !important;
+  @apply flex flex-col shadow-[rgba(0,0,0,.25)] shadow-lg select-none print:hidden !important;
 }
 
 .leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
   border: none !important;
-  @apply rounded-full bg-gray-800 !important;
+  @apply rounded-full bg-gray-900 !important;
 }
 
 .leaflet-control-zoom-in, .leaflet-control-zoom-out {
@@ -61,7 +65,7 @@ button {
 }
 
 .leaflet-div-icon {
-  @apply !bg-transparent !border-none;
+  @apply !bg-transparent !border-none pointer-events-none;
   transition-property: width, height, margin;
   transition-duration: .2s;
 }
@@ -71,7 +75,7 @@ button {
 }
 
 .cards {
-  @apply rounded-md bg-gray-900 py-4 grow align-middle
+  @apply rounded-md bg-gray-900 py-4 grow basis-0 align-middle;
 }
 
 .cards-title {
@@ -95,11 +99,23 @@ h1 {
 }
 
 .row {
-  @apply flex justify-between p-5 border-t border-gray-700 last:pb-1
+  @apply flex justify-between p-5 border-t border-gray-700 last:pb-1 cursor-pointer;
 }
 
 .row-value {
   @apply text-white/60
+}
+
+.legend div div {
+  @apply flex gap-2 items-center self-start cursor-pointer;
+}
+
+.square {
+  @apply inline-block w-4 h-4;
+}
+
+.VictoryContainer path {
+  @apply cursor-pointer;
 }
 
 input[type="email"], input[type="password"] {
@@ -107,13 +123,44 @@ input[type="email"], input[type="password"] {
 
 }
 
+label {
+  @apply select-none text-right;
+}
+
+label::after {
+  content: ":";
+}
+
+input, select {
+  @apply bg-black/50 h-10;
+  accent-color: #EC4899;
+}
+
+input[type=checkbox] {
+  @apply h-6 w-6 mr-1;
+}
+
+input[type=number] {
+  @apply text-right;
+}
+
+.menuProfile > span {
+  @apply !overflow-visible;
+}
+
+.profilePic {
+  @apply rounded-full w-32 mx-auto outline-2 outline-gray-300 outline-offset-4;
+  outline-style: solid;
+}
+
 ::-webkit-scrollbar {
-  width: 12px;
+  @apply w-3 h-3;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #979797;
-  border: 4px solid rgba(0, 0, 0, 0);
-  background-clip: padding-box;
-  border-radius: 50vh;
+  @apply bg-gray-400 border-4 border-transparent border-solid bg-clip-padding rounded-full;
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-transparent;
 }
