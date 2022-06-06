@@ -16,7 +16,7 @@ namespace Api.Services
             await context.SaveChangesAsync();
         }
 
-        public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time).Take(10);
+        public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time);
 
         public User? VerifyUserLogin(string email, string password)
         {
