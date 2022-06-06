@@ -46,5 +46,20 @@ namespace Api.Services
 
             return null;
         }
+
+        public async Task UpdateUserPasswordAsync(string email, string newPassword)
+        {
+            var context = SqliteDbContext.Create();
+
+            if (context.Users.FirstOrDefault(x => x.Email == email) is User user)
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                context.Users.Update(user);
+
+                await context.SaveChangesAsync();
+            }
+            else
+                throw new Exception("This e-mail is not registered to an account.");
+        }
     }
 }
