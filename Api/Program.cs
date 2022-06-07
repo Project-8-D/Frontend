@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<MqttService>();
+builder.Services.AddSingleton<WebSocketService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -44,6 +45,7 @@ app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseWebSockets();
 
 app.MapControllers();
 

@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 
 export default function SightingsAccuracyCard({ coords }) {
     let unresolved = coords.filter(coord => coord.resolved == false);
-    let gunshots = unresolved.filter(coord => coord.soundType == "gunshot").length;
-    let animals = unresolved.filter(coord => coord.soundType == "animal").length;
-    let vehicles = unresolved.filter(coord => coord.soundType == "vehicle").length;
-    let unknowns = unresolved.filter(coord => coord.soundType == "unknown").length;
+    let gunshots = unresolved.filter(coord => coord.sound_type == "gunshot").length;
+    let animals = unresolved.filter(coord => coord.sound_type == "animal").length;
+    let vehicles = unresolved.filter(coord => coord.sound_type == "vehicle").length;
+    let unknowns = unresolved.filter(coord => coord.sound_type == "unknown").length;
 
     const router = useRouter();
 
@@ -30,10 +30,10 @@ export default function SightingsAccuracyCard({ coords }) {
                 <div className="grow h-[13em] !self-center m-6">
                     <VictoryPie 
                     data={[
-                        {x: 'gunshot', y: gunshots},
-                        {x: 'animal', y: animals},
-                        {x: 'vehicle', y: vehicles},
-                        {x: 'unknown', y: unknowns}
+                        {x: "gunshot", y: gunshots},
+                        {x: "animal", y: animals},
+                        {x: "vehicle", y: vehicles},
+                        {x: "unknown", y: unknowns}
                     ]}
                     radius={200}
                     colorScale={["#EC4899", "#136F63", "#F3C677", "#5954E3"]}

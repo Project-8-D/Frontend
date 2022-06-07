@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component } from "react";
 
 export default class Login extends Component {
     constructor() {
@@ -20,13 +20,13 @@ export default class Login extends Component {
         e.preventDefault();
         await fetch("https://localhost:8082/api/login", {
             method: "POST",
-            credentials: 'include',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            credentials: "include",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
             body: JSON.stringify(this.state)
         }).then(response => {
             if (response.status === 200) {
                 response.json().then((body) => {
-                    localStorage.setItem('token', body)
+                    localStorage.setItem("token", body)
                     window.location.pathname = "/"
                 })
             }
