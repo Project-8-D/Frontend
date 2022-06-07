@@ -22,7 +22,7 @@ export default function Dashboard({ coords }) {
       <div className="flex flex-col sm:flex-row gap-4 my-4 mx-4 lg:mx-0">
         <StatusCards coords={coords}/>
         <div className="h-96 w-full sm:w-9/12 bg-gray-900 rounded-md">
-          <Map coords={coords.slice(0, 10)} coordClick={(coord, coords) => router.push("/sightings?coord=" + coord.guid)} bounds={[[-4, 19],[0.7, 23.5]]}/>
+          <Map coords={coords.slice(0, 10)} coordClick={(coord, coords) => router.push("/sightings?active=" + coord.guid)} bounds={[[-4, 19],[0.7, 23.5]]}/>
         </div>
       </div>
 

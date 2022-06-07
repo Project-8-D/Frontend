@@ -5,7 +5,7 @@ export default function StatusCards({ coords }) {
 
     let resolved = coords.filter(coord => coord.resolved == true)
     let unresolved = coords.filter(coord => coord.resolved == false)
-    let urgent = unresolved.filter(coord => coord.soundType == "gunshot")
+    let urgent = unresolved.filter(coord => coord.sound_type == "gunshot")
     return (
         <div className="flex flex-row sm:flex-col grow gap-4">
             <div className="cards cursor-pointer" onClick={() => router.push("/sightings?open=yes&limit=off")}>

@@ -2,18 +2,20 @@ using Api.Database.Models;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
-using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace Api.Services.MqttHandler;
 
 public class MqttService
 {
     private readonly DatabaseService _databaseService;
+    private readonly WebSocketService _webSocketService;
 
-    public MqttService(DatabaseService databaseService)
+    public MqttService(DatabaseService databaseService, WebSocketService webSocketService)
     {
         _databaseService = databaseService;
+        _webSocketService = webSocketService;
     }
 
     public void Start()
@@ -50,6 +52,9 @@ public class MqttService
 
     private async Task MessageHandler(MqttApplicationMessageReceivedEventArgs args)
     {
-        await _databaseService.AddNotificationAsync(JsonConvert.DeserializeObject<Notification>(Encoding.UTF8.GetString(args.ApplicationMessage.Payload)));
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        var notification = JsonSerializer.Deserialize<Notification>(Encoding.UTF8.GetString(args.ApplicationMessage.Payload), options);
+        await _databaseService.AddNotificationAsync(notification);
+        _webSocketService.SendMessage(JsonSerializer.Serialize(notification, options));
     }
 }

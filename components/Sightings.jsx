@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
@@ -12,7 +12,7 @@ const Map = dynamic(
 
 export default function Sightings({ coords }) {
   const [map, setMap] = useState(null);
-  const [current, setCurrent] = useState(null);
+  const [active, setActive] = useState(null);
   const [playing, setPlaying] = useState(null);
   const [audio, setAudio] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -28,57 +28,108 @@ export default function Sightings({ coords }) {
   const [enableFilterLimit, setEnableFilterLimit] = useState(true);
   const [filterLimit, setFilterLimit] = useState(10);
 
+  function resetFilters() {
+    setFilterSoundType("");
+    setFilterOpen("yes");
+    setFilterProbabilityMin(0);
+    setFilterProbabilityMax(100);
+    setEnableFilterAge(false);
+    setFilterAge(1);
+    setOrderBy("time");
+    setOrderDesc(true);
+    setEnableFilterLimit(true);
+    setFilterLimit(10);
+  }
+
   const router = useRouter();
 
-  useEffect(() => {
-    const params = new URLSearchParams(router.asPath.split("?")[1]);
+  const handledParams = useRef(false);
 
-    const coord = params.get("coord");
-    if (coord) {
-      const found = coords.find(c => c.guid === coord);
-      if (found) setCurrent(found);
+  let filtered = coords.filter(coord => {
+    return (
+      filterSoundType === "" || coord.sound_type === filterSoundType) &&
+      (!enableFilterAge || coord.time*1000 >= Number(new Date()) - filterAge*1000*60*60) &&
+      coord.probability >= filterProbabilityMin && coord.probability <= filterProbabilityMax &&
+      (filterOpen === "both" || coord.resolved === (filterOpen === "no"));
+  }).sort((a, b) => {
+    switch (orderBy) {
+      case "time":
+        return b.time - a.time;
+      case "accuracy":
+        return b.probability - a.probability;
+      case "latitude":
+        return b.latitude - a.latitude;
+      case "longitude":
+        return b.longitude - a.longitude;
     }
+  });
 
+  if (!orderDesc) filtered.reverse();
+
+  filtered = filtered.slice(0, enableFilterLimit ? filterLimit : coords.length);
+
+  if (active && filtered.indexOf(active) === -1)
+    setActive(null);
+
+  function handleParams(newPath) {
+    resetFilters();
+
+    const params = new URLSearchParams((newPath || router.asPath).split("?")[1]);
+  
+    const active = params.get("active");
+    if (active) {
+      const found = coords.find(c => c.guid === active);
+      if (found) setActive(found);
+    }
+  
     const soundType = params.get("soundtype");
     if (soundType) setFilterSoundType(soundType);
-
+  
     const open = params.get("open");
     if (open) setFilterOpen(open);
-
+  
     const limit = params.get("limit");
     if (limit === "off") {
       setEnableFilterLimit(false);
     } else if (limit) {
       setFilterLimit(parseInt(limit));
     }
-
+  
     const maxAge = params.get("maxage");
     if (maxAge) {
       setEnableFilterAge(true);
       setFilterAge(parseInt(maxAge));
     }
-
+  
     const probmax = params.get("probmax");
     if (probmax) setFilterProbabilityMax(probmax);
+  }
+
+  useEffect(() => {
+    if (coords.length && !handledParams.current) {
+      handleParams();
+      handledParams.current = true;
+    }
+    router.events.on("routeChangeComplete", handleParams);
+    return () => router.events.off("routeChangeComplete", handleParams);
   }, [coords]);
 
-  function coordClick(coord, filtered) {
-    const same = coord == current;
-    setCurrent(same ? null : coord);
-
-    if (same) {
-      map.flyToBounds([[-4, 19],[0.4, 23.5]]);
-    } else {
-      map.flyTo([coord.latitude, coord.longitude]);
-      const el = document.querySelectorAll(".scrollList > div")[filtered.indexOf(coord)];
-      if (el) {
-        if (el.scrollIntoViewIfNeeded)
-          el.scrollIntoViewIfNeeded({ behavior: "smooth" });
-        else
-          el.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    if (map) {
+      if (active) {
+        map.flyTo([active.latitude, active.longitude]);
+        const el = document.querySelectorAll(".scrollList > div")[filtered.indexOf(active)];
+        if (el) {
+          if (el.scrollIntoViewIfNeeded)
+            el.scrollIntoViewIfNeeded({ behavior: "smooth" });
+          else
+            el.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        map.flyToBounds([[-4, 19],[0.4, 23.5]]);
       }
     }
-  }
+  }, [map, active, filtered]);
 
   function playClick(e, coord) {
     e.stopPropagation();
@@ -102,111 +153,97 @@ export default function Sightings({ coords }) {
     }
   }
 
-  let filtered = coords.filter(coord => {
-    return (
-      filterSoundType === "" || coord.soundType === filterSoundType) &&
-      (!enableFilterAge || coord.time*1000 >= Number(new Date()) - filterAge*1000*60*60) &&
-      coord.probability >= filterProbabilityMin && coord.probability <= filterProbabilityMax &&
-      (filterOpen === "both" || coord.resolved === (filterOpen === "no"));
-  }).sort((a, b) => {
-    switch (orderBy) {
-      case "time":
-        return b.time - a.time;
-      case "accuracy":
-        return b.probability - a.probability;
-      case "latitude":
-        return b.latitude - a.latitude;
-      case "longitude":
-        return b.longitude - a.longitude;
-    }
-  });
-
-  if (!orderDesc) filtered.reverse();
-
-  filtered = filtered.slice(0, enableFilterLimit ? filterLimit : coords.length);
-
   return <div className="flex flex-col lg:flex-row gap-4 m-4">
     <div className="h-[50vh] lg:h-[calc(100vh-5rem)] w-full lg:w-6/12">
-      <Map coords={filtered} current={current} coordClick={coordClick} setParentMap={setMap}/>
+      <Map coords={filtered} current={active} coordClick={(coord) => setActive(coord == active ? null : coord)} setParentMap={setMap}/>
     </div>
     <div className="lg:w-6/12 lg:h-[calc(100vh-5rem)] bg-gray-900 rounded-md">
       <div className="flex justify-between items-center relative box-content shadow-[rgba(0,0,0,.25)] shadow-lg print:shadow-none">
           <h2 className="text-xl pl-4 flex items-center gap-3">{filtersOpened ? "Filters" : "List"} <span className="text-base text-white/50">{filtered.length}/{coords.length}</span></h2>
-          <button className="print:hidden justify-self-end w-12 h-12" onClick={() => setFiltersOpened(!filtersOpened)}>
-            <i className="material-icons-round">{filtersOpened ? "view_list" : "filter_list"}</i>
-          </button>
-      </div>
-      <div className="scrollList overflow-y-auto h-[calc(100vh-5.5rem-50vh-3.75rem)] lg:h-[calc(100vh-9rem)] print:!h-auto">
-        {filtersOpened ? <div className="m-6 grid [grid-template-columns:max-content_max-content] gap-4 items-center w-max mx-auto">
-          <label htmlFor="soundtype">type</label>
-          <select value={filterSoundType} onChange={e => setFilterSoundType(e.target.value)} id="soundtype">
-            <option value="">all</option>
-            <option value="animal">animal</option>
-            <option value="gunshot">gunshot</option>
-            <option value="vehicle">vehicle</option>
-            <option value="unknown">unknown</option>
-          </select>
-
-          <label htmlFor="open">open</label>
-          <select value={filterOpen} onChange={e => setFilterOpen(e.target.value)} id="open">
-            <option value="yes">yes</option>
-            <option value="no">no</option>
-            <option value="both">both</option>
-          </select>
-
-          <label>probability</label>
-          <div className="flex items-center justify-between">
-            <input type="number" min={0} max={filterProbabilityMax} value={filterProbabilityMin} onChange={e => setFilterProbabilityMin(e.target.value)} className="w-5/12"/>
-            &#8211;
-            <input type="number" min={filterProbabilityMin} max={100} value={filterProbabilityMax} onChange={e => setFilterProbabilityMax(e.target.value)} className="w-5/12"/>
-          </div>
-
-          <label htmlFor="age" className={enableFilterAge ? "" : "opacity-50"}>max age</label>
-          <div className="flex items-center">
-            <input type="checkbox" checked={enableFilterAge} onChange={e => setEnableFilterAge(e.target.checked)}/>
-            <input type="number" min={0} value={filterAge} onChange={e => setFilterAge(e.target.value)} className="disabled:opacity-50" disabled={enableFilterAge ? undefined : true} id="age"/>
-            <span className="ml-1">h</span>
-          </div>
-
-          <label htmlFor="order">order by</label>
-          <div className="flex items-center">
-          <button onClick={() => setOrderDesc(!orderDesc)} className="select-none mr-1"><span className="material-icons-round text-3xl w-6 -ml-1 mr-1">{orderDesc ? "arrow_downward" : "arrow_upward"}</span></button>
-          <select value={orderBy} onChange={e => setOrderBy(e.target.value)} className="grow" id="order">
-            <option value="time">time</option>
-            <option value="accuracy">accuracy</option>
-            <option value="latitude">latitude</option>
-            <option value="longitude">longitude</option>
-          </select>
-          </div>
-
-          <label htmlFor="limit" className={enableFilterLimit ? "" : "opacity-50"}>limit</label>
-          <div className="flex items-center">
-            <input type="checkbox" checked={enableFilterLimit} onChange={e => setEnableFilterLimit(e.target.checked)}/>
-            <input type="number" min={0} value={filterLimit} onChange={e => setFilterLimit(e.target.value)} className="grow disabled:opacity-50" disabled={enableFilterLimit ? undefined : true} id="limit"/>
-          </div>
-        </div> : 
-        filtered.map((coord, i) => (
-          <Fragment key={coord.guid}>
-            <div onClick={() => coordClick(coord, filtered)} className={"flex py-2 pr-4 hover:bg-gray-600 print:text-black break-inside-avoid" + (coord == current ? " bg-gray-700 print:font-bold" : "")}>
-              <i className={"material-icons-round h-min m-4 text-3xl transition-transform" + (coord == current ? " rotate-180" : "")}>place</i>
-              <span className="flex-grow-[1] mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
-                <span className="font-bold">Point #{i + 1}</span>
-                <br />
-                <i className="material-icons-round" title="coordinates">my_location</i> {coord.longitude}, {coord.latitude}
-                <div className={"h-0 overflow-hidden transition-[height] [transition-timing-function:linear]" + (coord == current ? " expanded" : "")}>
-                  <i className="material-icons-round" title="time">schedule</i> {new Date(coord.time*1000).toLocaleString()}<br />
-                  <i className="material-icons-round" title="node id">scatter_plot</i> {coord.nodeId.toString()}<br />
-                  <i className="material-icons-round" title="sound type">category</i> {coord.soundType}<br />
-                  <i className="material-icons-round" title="probability">percent</i> {coord.probability}<br />
-                </div>
-              </span>
-              <button className="w-12 h-12 mt-[10px] ml-4 min-w-[3rem] rounded-full bg-pink-500 disabled:bg-pink-500/50 print:hidden transition-[background]" onClick={(e) => playClick(e, coord)} style={{ background: coord == playing ? `conic-gradient(#ec4899 ${progress}deg, #be185d ${progress+1}deg)` : "" }}>
-                <i className="material-icons-round text-[#8e2b5c]/100">{coord == playing ? "stop" : "play_arrow"}</i>
+          <span>
+            {filtersOpened &&
+              <button onClick={() => resetFilters()}>
+                <i className="material-icons-round">settings_backup_restore</i>
               </button>
+            }
+            <button className="print:hidden justify-self-end w-12 h-12" onClick={() => setFiltersOpened(!filtersOpened)}>
+              <i className="material-icons-round">{filtersOpened ? "view_list" : "filter_alt"}</i>
+            </button>
+          </span>
+      </div>
+      <div className="scrollList overflow-y-auto h-[calc(100vh-5.5rem-50vh-3.75rem)] lg:h-[calc(100vh-8rem)] print:!h-auto">
+        {filtersOpened ?
+          <div className="m-6 grid [grid-template-columns:max-content_max-content] gap-4 items-center w-max mx-auto">
+            <label htmlFor="soundtype">type</label>
+            <select value={filterSoundType} onChange={e => setFilterSoundType(e.target.value)} id="soundtype">
+              <option value="">all</option>
+              <option value="animal">animal</option>
+              <option value="gunshot">gunshot</option>
+              <option value="vehicle">vehicle</option>
+              <option value="unknown">unknown</option>
+            </select>
+
+            <label htmlFor="open">open</label>
+            <select value={filterOpen} onChange={e => setFilterOpen(e.target.value)} id="open">
+              <option value="yes">yes</option>
+              <option value="no">no</option>
+              <option value="both">both</option>
+            </select>
+
+            <label>probability</label>
+            <div className="flex items-center justify-between">
+              <input type="number" min={0} max={filterProbabilityMax} value={filterProbabilityMin} onChange={e => setFilterProbabilityMin(e.target.value)} className="w-5/12"/>
+              &#8211;
+              <input type="number" min={filterProbabilityMin} max={100} value={filterProbabilityMax} onChange={e => setFilterProbabilityMax(e.target.value)} className="w-5/12"/>
             </div>
-            {i < coords.length - 1 && <hr className="border-0 h-[2px] bg-gray-800 w-[calc(100%-2rem)] m-auto"/>}
-          </Fragment>
-        ))
+
+            <label htmlFor="age" className={enableFilterAge ? "" : "opacity-50"}>max age</label>
+            <div className="flex items-center">
+              <input type="checkbox" checked={enableFilterAge} onChange={e => setEnableFilterAge(e.target.checked)}/>
+              <input type="number" min={0} value={filterAge} onChange={e => setFilterAge(e.target.value)} className="disabled:opacity-50" disabled={enableFilterAge ? undefined : true} id="age"/>
+              <span className="ml-1">h</span>
+            </div>
+
+            <label htmlFor="order">order by</label>
+            <div className="flex items-center">
+            <button onClick={() => setOrderDesc(!orderDesc)} className="select-none mr-1"><span className="material-icons-round text-3xl w-6 -ml-1 mr-1">{orderDesc ? "arrow_downward" : "arrow_upward"}</span></button>
+            <select value={orderBy} onChange={e => setOrderBy(e.target.value)} className="grow" id="order">
+              <option value="time">time</option>
+              <option value="accuracy">accuracy</option>
+              <option value="latitude">latitude</option>
+              <option value="longitude">longitude</option>
+            </select>
+            </div>
+
+            <label htmlFor="limit" className={enableFilterLimit ? "" : "opacity-50"}>limit</label>
+            <div className="flex items-center">
+              <input type="checkbox" checked={enableFilterLimit} onChange={e => setEnableFilterLimit(e.target.checked)}/>
+              <input type="number" min={0} value={filterLimit} onChange={e => setFilterLimit(e.target.value)} className="grow disabled:opacity-50" disabled={enableFilterLimit ? undefined : true} id="limit"/>
+            </div>
+          </div>
+          :
+          filtered.map((coord, i) => (
+            <Fragment key={coord.guid}>
+              <div onClick={() => setActive(coord == active ? null : coord)} className={"flex py-2 pr-4 hover:bg-gray-600 print:text-black break-inside-avoid" + (coord == active ? " bg-gray-700 print:font-bold" : "")}>
+                <i className={"material-icons-round h-min m-4 text-3xl transition-transform" + (coord == active ? " rotate-180" : "")}>place</i>
+                <span className="flex-grow-[1] mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <span className="font-bold">Point #{i + 1}</span>
+                  <br />
+                  <i className="material-icons-round" title="coordinates">my_location</i> {coord.longitude}, {coord.latitude}
+                  <div className={"h-0 overflow-hidden transition-[height] [transition-timing-function:linear]" + (coord == active ? " expanded" : "")}>
+                    <i className="material-icons-round" title="time">schedule</i> {new Date(coord.time*1000).toLocaleString()}<br />
+                    <i className="material-icons-round" title="node id">scatter_plot</i> {coord.nodeId.toString()}<br />
+                    <i className="material-icons-round" title="sound type">category</i> {coord.sound_type}<br />
+                    <i className="material-icons-round" title="probability">percent</i> {coord.probability}<br />
+                  </div>
+                </span>
+                <button className="w-12 h-12 mt-[10px] ml-4 min-w-[3rem] rounded-full bg-pink-500 disabled:bg-pink-500/50 print:hidden transition-[background]" onClick={(e) => playClick(e, coord)} style={{ background: coord == playing ? `conic-gradient(#ec4899 ${progress}deg, #be185d ${progress+1}deg)` : "" }}>
+                  <i className="material-icons-round text-[#8e2b5c]/100">{coord == playing ? "stop" : "play_arrow"}</i>
+                </button>
+              </div>
+              {i < coords.length - 1 && <hr className="border-0 h-[2px] bg-gray-800 w-[calc(100%-2rem)] m-auto"/>}
+            </Fragment>
+          ))
         }
       </div>
     </div>
