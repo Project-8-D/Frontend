@@ -23,7 +23,7 @@ export default function Navbar() {
       </button>
       <div className="float-right">
         <button className="w-12 h-12" onClick={() => window.print()}>
-          <i className="material-icons-round">print</i>
+          <span className="material-icons-round">print</span>
         </button>
         <button className="w-12 h-12">
           <i className="material-icons-round">notifications</i>
