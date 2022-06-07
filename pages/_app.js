@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps }) {
     }
     
     if (token) {
-      fetch("https://localhost:8082/api/notifications", {
+      fetch(`https://${location.hostname}:8082/api/notifications`, {
         headers: new Headers({
           "Authorization": "Bearer " + token
         })
@@ -33,7 +33,7 @@ export default function MyApp({ Component, pageProps }) {
         });
 
       if (!socket) {
-        socket = new WebSocket("wss://localhost:8082/ws");
+        socket = new WebSocket(`wss://${location.hostname}:8082/ws`);
         socket.onmessage = async event => {
           socket.send("");
           const data = JSON.parse(event.data);
@@ -50,6 +50,7 @@ export default function MyApp({ Component, pageProps }) {
 
   return <>
     <Head>
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"></link>
       <title>Sightings</title>
     </Head>
     <Navbar />
