@@ -18,7 +18,7 @@ export default class Login extends Component {
 
     async handleSubmit(e) {
         e.preventDefault();
-        await fetch(`https://${location.hostname}:8082/api/login`, {
+        await fetch(`http://${location.hostname}:8082/api/login`, {
             method: "POST",
             credentials: "include",
             headers: { "Accept": "application/json", "Content-Type": "application/json" },

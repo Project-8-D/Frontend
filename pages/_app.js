@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps }) {
     }
     
     if (token) {
-      fetch(`https://${location.hostname}:8082/api/notifications`, {
+      fetch(`http://${location.hostname}:8082/api/notifications`, {
         headers: new Headers({
           "Authorization": "Bearer " + token
         })
