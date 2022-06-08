@@ -7,5 +7,6 @@ services:
     build: ./Api/
     ports:
       - "8081:8081"
+      - "8082:8082"
     environment:
       - ASPNETCORE_Kestrel__Certificates__Development__Password="Api123"
