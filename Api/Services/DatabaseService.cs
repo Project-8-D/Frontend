@@ -46,5 +46,18 @@ namespace Api.Services
 
             return null;
         }
+
+        public async Task<bool> SetResolvedAsync(Guid guid, bool resolved)
+        {
+            var context = SqliteDbContext.Create();
+
+            if (context.Notifications.FirstOrDefault(x => x.Guid == guid) is Notification notification)
+            {
+                notification.Resolved = resolved;
+                return (await context.SaveChangesAsync()) > 0;
+            }
+
+            return false;
+        }
     }
 }

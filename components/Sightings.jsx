@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import colorMap from "./colorMap";
 
 const Map = dynamic(
   () => import("../components/Map"),
@@ -10,7 +11,9 @@ const Map = dynamic(
   }
 );
 
-export default function Sightings({ coords }) {
+const getTextColor = (hex) => (parseInt(hex.slice(1, 3), 16) + parseInt(hex.slice(3, 5), 16) + parseInt(hex.slice(5, 7), 16)) / 3 > 150 ? "#000000" : "#ffffff";
+
+export default function Sightings({ coords, setCoords }) {
   const [map, setMap] = useState(null);
   const [active, setActive] = useState(null);
   const [playing, setPlaying] = useState(null);
@@ -18,9 +21,10 @@ export default function Sightings({ coords }) {
   const [progress, setProgress] = useState(0);
   const [filtersOpened, setFiltersOpened] = useState(false);
   const [filterSoundType, setFilterSoundType] = useState("");
-  const [filterOpen, setFilterOpen] = useState("yes");
+  const [filterResolved, setFilterResolved] = useState("no");
   const [filterProbabilityMin, setFilterProbabilityMin] = useState(0);
   const [filterProbabilityMax, setFilterProbabilityMax] = useState(100);
+  const [filterNode, setFilterNode] = useState("");
   const [enableFilterAge, setEnableFilterAge] = useState(false);
   const [filterAge, setFilterAge] = useState(1);
   const [orderBy, setOrderBy] = useState("time");
@@ -30,7 +34,8 @@ export default function Sightings({ coords }) {
 
   function resetFilters() {
     setFilterSoundType("");
-    setFilterOpen("yes");
+    setFilterResolved("no");
+    setFilterNode("");
     setFilterProbabilityMin(0);
     setFilterProbabilityMax(100);
     setEnableFilterAge(false);
@@ -50,7 +55,8 @@ export default function Sightings({ coords }) {
       filterSoundType === "" || coord.sound_type === filterSoundType) &&
       (!enableFilterAge || coord.time*1000 >= Number(new Date()) - filterAge*1000*60*60) &&
       coord.probability >= filterProbabilityMin && coord.probability <= filterProbabilityMax &&
-      (filterOpen === "both" || coord.resolved === (filterOpen === "no"));
+      (!filterNode || coord.nodeId == filterNode) && 
+      (filterResolved === "both" || coord.resolved === (filterResolved === "yes"));
   }).sort((a, b) => {
     switch (orderBy) {
       case "time":
@@ -85,8 +91,8 @@ export default function Sightings({ coords }) {
     const soundType = params.get("soundtype");
     if (soundType) setFilterSoundType(soundType);
   
-    const open = params.get("open");
-    if (open) setFilterOpen(open);
+    const resolved = params.get("resolved");
+    if (resolved) setFilterResolved(resolved);
   
     const limit = params.get("limit");
     if (limit === "off") {
@@ -103,6 +109,25 @@ export default function Sightings({ coords }) {
   
     const probmax = params.get("probmax");
     if (probmax) setFilterProbabilityMax(probmax);
+  }
+
+  function handleResolvedClick(coord) {
+    fetch(`http://${location.hostname}:8081/api/resolve`, {
+            method: "POST",
+            headers: new Headers({
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + localStorage.getItem("token")
+            }),
+            body: JSON.stringify({
+              guid: coord.guid,
+              resolved: !coord.resolved
+            })
+        }).then(response => {
+            if (response.ok) {
+              coord.resolved = !coord.resolved;
+              setCoords(coords => coords.map(c => c.guid === coord.guid ? coord : c));
+            }
+        });
   }
 
   useEffect(() => {
@@ -161,11 +186,9 @@ export default function Sightings({ coords }) {
       <div className="flex justify-between items-center relative box-content shadow-[rgba(0,0,0,.25)] shadow-lg print:shadow-none">
           <h2 className="text-xl pl-4 flex items-center gap-3">{filtersOpened ? "Filters" : "List"} <span className="text-base text-white/50">{filtered.length}/{coords.length}</span></h2>
           <span>
-            {filtersOpened &&
-              <button onClick={() => resetFilters()}>
-                <i className="material-icons-round">settings_backup_restore</i>
-              </button>
-            }
+            <button onClick={() => resetFilters()}>
+              <i className="material-icons-round">settings_backup_restore</i>
+            </button>
             <button className="print:hidden justify-self-end w-12 h-12" onClick={() => setFiltersOpened(!filtersOpened)}>
               <i className="material-icons-round">{filtersOpened ? "view_list" : "filter_alt"}</i>
             </button>
@@ -183,16 +206,25 @@ export default function Sightings({ coords }) {
               <option value="unknown">unknown</option>
             </select>
 
-            <label htmlFor="open">open</label>
-            <select value={filterOpen} onChange={e => setFilterOpen(e.target.value)} id="open">
+            <label htmlFor="resolved">resolved</label>
+            <select value={filterResolved} onChange={e => setFilterResolved(e.target.value)} id="resolved">
               <option value="yes">yes</option>
               <option value="no">no</option>
               <option value="both">both</option>
             </select>
 
-            <label>probability</label>
+            <label htmlFor="node">node</label>
+            <select value={filterNode} onChange={e => setFilterNode(e.target.value)} id="node">
+              <option value="">all</option>
+              {coords.reduce((acc, c) => {
+                if (!acc.includes(c.nodeId)) acc.push(c.nodeId);
+                return acc;
+                }, []).sort(new Intl.Collator(undefined, {numeric: true}).compare).map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+
+            <label htmlFor="probmin">probability</label>
             <div className="flex items-center justify-between">
-              <input type="number" min={0} max={filterProbabilityMax} value={filterProbabilityMin} onChange={e => setFilterProbabilityMin(e.target.value)} className="w-5/12"/>
+              <input type="number" min={0} max={filterProbabilityMax} value={filterProbabilityMin} onChange={e => setFilterProbabilityMin(e.target.value)} className="w-5/12" id="probmin"/>
               &#8211;
               <input type="number" min={filterProbabilityMin} max={100} value={filterProbabilityMax} onChange={e => setFilterProbabilityMax(e.target.value)} className="w-5/12"/>
             </div>
@@ -232,9 +264,33 @@ export default function Sightings({ coords }) {
                   <i className="material-icons-round" title="coordinates">my_location</i> {coord.longitude}, {coord.latitude}
                   <div className={"h-0 overflow-hidden transition-[height] [transition-timing-function:linear]" + (coord == active ? " expanded" : "")}>
                     <i className="material-icons-round" title="time">schedule</i> {new Date(coord.time*1000).toLocaleString()}<br />
-                    <i className="material-icons-round" title="node id">scatter_plot</i> {coord.nodeId.toString()}<br />
-                    <i className="material-icons-round" title="sound type">category</i> {coord.sound_type}<br />
+                    <i className="material-icons-round" title="node id">scatter_plot</i>
+                    &nbsp;
+                    <span className="chip" onClick={e => {
+                      e.stopPropagation();
+                      setFilterNode(coord.nodeId);
+                    }}>
+                      {coord.nodeId.toString()}
+                    </span>
+                    <br />
+                    <i className="material-icons-round" title="sound type">category</i>
+                      &nbsp;
+                      <span className="chip" style={{
+                        backgroundColor: colorMap[coord.sound_type],
+                        color: getTextColor(colorMap[coord.sound_type]) + "BF"
+                      }} onClick={e => {
+                        e.stopPropagation();
+                        resetFilters();
+                        setFilterSoundType(coord.sound_type);
+                        setEnableFilterLimit(false);
+                      }}>{coord.sound_type}</span>
+                      <br />
                     <i className="material-icons-round" title="probability">percent</i> {coord.probability}<br />
+                    <span className="flex items-center">
+                      <i className="material-icons-round" title="resolved">done</i>
+                      &nbsp;
+                      <input type="checkbox" checked={coord.resolved} onChange={() => handleResolvedClick(coord)} onClick={e => e.stopPropagation()} />
+                    </span>
                   </div>
                 </span>
                 <button className="w-12 h-12 mt-[10px] ml-4 min-w-[3rem] rounded-full bg-pink-500 disabled:bg-pink-500/50 print:hidden transition-[background]" onClick={(e) => playClick(e, coord)} style={{ background: coord == playing ? `conic-gradient(#ec4899 ${progress}deg, #be185d ${progress+1}deg)` : "" }}>

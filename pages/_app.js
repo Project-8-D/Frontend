@@ -54,7 +54,7 @@ export default function MyApp({ Component, pageProps }) {
       <title>Sightings</title>
     </Head>
     <Navbar />
-    <Component coords={coords} {...pageProps} />
+    <Component coords={coords} setCoords={setCoords} {...pageProps} />
   </>
 }
 
