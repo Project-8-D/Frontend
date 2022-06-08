@@ -44,6 +44,7 @@ export default function Navbar() {
       </div>}
       <MenuItem icon="home" text="Home" href="/" />
       <MenuItem icon="map" text="Sightings" href="/sightings" />
+      <MenuItem icon="settings" text="Settings" href="/settings" />
     </div>
   </>
 }
