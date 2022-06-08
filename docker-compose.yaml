@@ -6,7 +6,11 @@ services:
   backend:
     build: ./Api/
     ports:
-      - "8081:8081"
-      - "8082:8082"
+      - 8081 
+      - 8082
     environment:
+      - ASPNETCORE_URLS=https://+:8082;http://+:8081
       - ASPNETCORE_Kestrel__Certificates__Development__Password="Api123"
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/https:/https:ro
