@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import { DivIcon } from "leaflet";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css";
-
-const colorMap = {
-  "gunshot": "#EC4899",
-  "animal": "#136F63",
-  "vehicle": "#F3C677",
-  "unknown": "#5954E3"
-}
+import colorMap from "./colorMap";
 
 function createIcon(p, coord, c) {
   const iconWidth = 100;
