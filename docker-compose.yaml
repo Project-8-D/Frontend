@@ -11,6 +11,6 @@ services:
     environment:
       - ASPNETCORE_URLS=https://+:8082;http://+:8081
       - ASPNETCORE_Kestrel__Certificates__Development__Password="Chengeta123"
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/chengeta.xyz.pfx
     volumes:
       - ~/https:/https:ro
