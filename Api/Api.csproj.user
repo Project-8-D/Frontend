@@ -5,5 +5,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ActiveDebugProfile>Api</ActiveDebugProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\ovvugt\Desktop\school\Frontend\.github\workflows\deploy.yaml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
