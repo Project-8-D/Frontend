@@ -115,6 +115,7 @@ export default function Sightings({ coords, setCoords }) {
     fetch(`http://${location.hostname}:8081/api/resolve`, {
             method: "POST",
             headers: new Headers({
+              "Accept": "application/json",
               "Content-Type": "application/json",
               "Authorization": "Bearer " + localStorage.getItem("token")
             }),
