@@ -22,7 +22,7 @@ export default function MyApp({ Component, pageProps }) {
     }
     
     if (token) {
-      fetch(`https://${location.hostname}:8443/api/notifications`, {
+      fetch(`http://${location.hostname}:8081/api/notifications`, {
         headers: new Headers({
           "Authorization": "Bearer " + token
         })
@@ -33,7 +33,7 @@ export default function MyApp({ Component, pageProps }) {
         });
 
       if (!socket) {
-        socket = new WebSocket(`wss://${location.hostname}:8443/ws`);
+        socket = new WebSocket(`ws://${location.hostname}:8081/ws`);
         socket.onmessage = async event => {
           socket.send("");
           const data = JSON.parse(event.data);
