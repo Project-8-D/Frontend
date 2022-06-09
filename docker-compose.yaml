@@ -13,4 +13,4 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Development__Password=
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Api.pfx
     volumes:
-      - ~/.aspnet/https:/https:ro
+      - /home/ubuntu-1014106/.aspnet/https:/https:ro
