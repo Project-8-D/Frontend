@@ -41,7 +41,6 @@ var app = builder.Build();
 app.Services.GetRequiredService<MqttService>().Start();
 
 app.UseCors();
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
