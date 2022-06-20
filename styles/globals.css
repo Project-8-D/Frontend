@@ -21,7 +21,7 @@ button {
 }
 
 .popup-buttons button {
-  @apply p-2 px-4 rounded-sm uppercase;
+  @apply p-2 px-4 rounded-[0.25rem] uppercase;
 }
 
 .material-icons-round {
@@ -80,6 +80,13 @@ button {
 
 .leaflet-div-icon svg {
   @apply w-full h-full;
+}
+
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 3.25px;
 }
 
 .cards {
@@ -159,6 +166,18 @@ input[type=number] {
 .profilePic {
   @apply rounded-full w-32 mx-auto outline-2 outline-gray-300 outline-offset-4;
   outline-style: solid;
+}
+
+.backdrop {
+  @apply absolute content-[""] w-full h-full top-0 left-0 pointer-events-none z-9999 transition-opacity;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 24%);
+  transition-duration: .5s;
+}
+
+@media screen(sm) {
+  .backdrop {
+    background: linear-gradient(-20deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 24%);
+  }
 }
 
 ::-webkit-scrollbar {

@@ -18,18 +18,19 @@ export default function Popup({ lastNotification }) {
   }, [lastNotification]);
 
   return (
-    <div className={"fixed flex flex-col gap-4 right-0 m-4 p-4 w-80 bg-gray-800 shadow-[rgba(0,0,0,.25)] shadow-lg z-9999 transition-[top] -top-full" + (!closed ? " !top-0" : "")}>
+    <>
+    <div className="backdrop" style={{ opacity: !closed*1 }}></div>
+    <div className={"popup rounded-sm fixed flex flex-col gap-4 right-0 m-4 p-4 w-[calc(100%-2rem)] sm:w-80 bg-gray-800 shadow-[rgba(0,0,0,.25)] shadow-lg z-9999 transition-[top] -bottom-full" + (!closed ? " !bottom-0" : "")}>
       <div className="flex">
           <PlayButton coord={lastNotification} playing={playing} setPlaying={setPlaying}/>
           <div>
-            <p className="select-none text-center p-5 text-xl">{lastNotification?.sound_type}</p>
+            <p className="select-none text-center p-5 text-xl capitalize">{lastNotification?.sound_type}</p>
           </div>
       </div>
       <div className="popup-buttons flex justify-between">
         <button className="select-none bg-red-600" onClick={() => setClosed(true)}>Close</button>
         <button className="select-none bg-green-600" onClick={
           () => {
-            setPlaying(false);
             router.push("/sightings?active=" + lastNotification?.guid);
             setClosed(true);
           }
@@ -37,5 +38,6 @@ export default function Popup({ lastNotification }) {
       </div>
   
     </div>
+    </>
   )
 }

@@ -157,9 +157,7 @@ export default function Sightings({ coords, setCoords }) {
   }, [map, active, filtered]);
 
   return <div className="flex flex-col lg:flex-row gap-4 m-4">
-    <div className="h-[50vh] lg:h-[calc(100vh-5rem)] w-full lg:w-6/12">
-      <Map coords={filtered} current={active} coordClick={(coord) => setActive(coord == active ? null : coord)} setParentMap={setMap}/>
-    </div>
+
     <div className="lg:w-6/12 lg:h-[calc(100vh-5rem)] bg-gray-900 rounded-md">
       <div className="flex justify-between items-center relative box-content shadow-[rgba(0,0,0,.25)] shadow-lg print:shadow-none">
           <h2 className="text-xl pl-4 flex items-center gap-3">{filtersOpened ? "Filters" : "List"} <span className="text-base text-white/50">{filtered.length}/{coords.length}</span></h2>
@@ -278,6 +276,9 @@ export default function Sightings({ coords, setCoords }) {
           ))
         }
       </div>
+    </div>
+    <div className="h-[50vh] lg:h-[calc(100vh-5rem)] w-full lg:w-6/12">
+      <Map coords={filtered} current={active} coordClick={(coord) => setActive(coord == active ? null : coord)} setParentMap={setMap}/>
     </div>
   </div>
 }
