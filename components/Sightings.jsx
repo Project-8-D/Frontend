@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, Fragment } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import colorMap from "./colorMap";
+import PlayButton from "../components/PlayButton";
 
 const Map = dynamic(
   () => import("../components/Map"),
@@ -17,8 +18,6 @@ export default function Sightings({ coords, setCoords }) {
   const [map, setMap] = useState(null);
   const [active, setActive] = useState(null);
   const [playing, setPlaying] = useState(null);
-  const [audio, setAudio] = useState(null);
-  const [progress, setProgress] = useState(0);
   const [filtersOpened, setFiltersOpened] = useState(false);
   const [filterSoundType, setFilterSoundType] = useState("");
   const [filterResolved, setFilterResolved] = useState("no");
@@ -157,28 +156,6 @@ export default function Sightings({ coords, setCoords }) {
     }
   }, [map, active, filtered]);
 
-  function playClick(e, coord) {
-    e.stopPropagation();
-
-    if (playing == coord) {
-      setPlaying(null);
-      audio?.pause();
-    } else {
-      e.target.disabled = true;
-      audio?.pause();
-      setAudio(null);
-      const a = new Audio(coord.sound);
-      a.addEventListener("ended", () => setPlaying(null));
-      setProgress(0);
-      a.addEventListener("timeupdate", () => setProgress(a.currentTime / a.duration * 360));
-      a.play().then(() => {
-        setPlaying(coord);
-        setAudio(a);
-        e.target.disabled = false;
-      });
-    }
-  }
-
   return <div className="flex flex-col lg:flex-row gap-4 m-4">
     <div className="h-[50vh] lg:h-[calc(100vh-5rem)] w-full lg:w-6/12">
       <Map coords={filtered} current={active} coordClick={(coord) => setActive(coord == active ? null : coord)} setParentMap={setMap}/>
@@ -294,9 +271,7 @@ export default function Sightings({ coords, setCoords }) {
                     </span>
                   </div>
                 </span>
-                <button className="w-12 h-12 mt-[10px] ml-4 min-w-[3rem] rounded-full bg-pink-500 disabled:bg-pink-500/50 print:hidden transition-[background]" onClick={(e) => playClick(e, coord)} style={{ background: coord == playing ? `conic-gradient(#ec4899 ${progress}deg, #be185d ${progress+1}deg)` : "" }}>
-                  <i className="material-icons-round text-[#8e2b5c]/100">{coord == playing ? "stop" : "play_arrow"}</i>
-                </button>
+                <PlayButton coord={coord} playing={playing} setPlaying={setPlaying}/>
               </div>
               {i < coords.length - 1 && <hr className="border-0 h-[2px] bg-gray-800 w-[calc(100%-2rem)] m-auto"/>}
             </Fragment>
