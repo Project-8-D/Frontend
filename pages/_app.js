@@ -2,6 +2,7 @@ import "../styles/globals.css"
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import App from "next/app";
+import Popup from "../components/Popup";
 import { useRouter } from "next/router";
 import Head from "next/head";
 
@@ -14,6 +15,7 @@ export default function MyApp({ Component, pageProps }) {
 
   const [coords, setCoords] = useState([]);
   const router = useRouter();
+  const [lastNotification, setLastNotification] = useState(undefined);
 
   useEffect(() => {
     let token;
@@ -39,6 +41,7 @@ export default function MyApp({ Component, pageProps }) {
           const data = JSON.parse(event.data);
           setCoords(oldCoords => [...oldCoords, data]);
           const notification = await spawnNotification(data);
+          setLastNotification(data);
           notification.onclick = () => {
             router.push("/sightings?active=" + data.guid);
             window.focus();
@@ -54,6 +57,7 @@ export default function MyApp({ Component, pageProps }) {
       <title>Sightings</title>
     </Head>
     <Navbar />
+    <Popup lastNotification={lastNotification}/>
     <Component coords={coords} setCoords={setCoords} {...pageProps} />
   </>
 }
