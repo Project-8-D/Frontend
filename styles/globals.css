@@ -20,6 +20,10 @@ button {
   @apply inline-flex items-center justify-center;
 }
 
+.popup-buttons button {
+  @apply p-2 px-4 rounded-sm uppercase;
+}
+
 .material-icons-round {
   @apply select-none align-middle;
 }
