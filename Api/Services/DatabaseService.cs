@@ -5,14 +5,26 @@ namespace Api.Services
 {
     public class DatabaseService
     {
-        public async Task AddNotificationAsync(Notification? notification)
+        public async Task AddNotificationAsync(Notification notification)
         {
-            if (notification == null)
-                return;
-
             var context = SqliteDbContext.Create();
 
             context.Notifications.Add(notification);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task ToggleSubscription(string email) {
+            var context = SqliteDbContext.Create();
+
+            if (context.Subscribers.FirstOrDefault(x => x.Email == email) is Subscriber subscriber) 
+            {
+                context.Subscribers.Remove(subscriber);
+            } 
+            else 
+            {
+                context.Subscribers.Add(new Subscriber{Email=email});
+            }
+
             await context.SaveChangesAsync();
         }
 
