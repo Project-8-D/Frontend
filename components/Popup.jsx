@@ -9,7 +9,6 @@ export default function Popup({ lastNotification }) {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(count.current);
     if (count.current < 2) {
       count.current++;
     } else {
