@@ -61,5 +61,18 @@ namespace Api.Services
             else
                 throw new Exception("This e-mail is not registered to an account.");
         }
+
+        public async Task<bool> SetResolvedAsync(Guid guid, bool resolved)
+        {
+            var context = SqliteDbContext.Create();
+
+            if (context.Notifications.FirstOrDefault(x => x.Guid == guid) is Notification notification)
+            {
+                notification.Resolved = resolved;
+                return (await context.SaveChangesAsync()) > 0;
+            }
+
+            return false;
+        }
     }
 }

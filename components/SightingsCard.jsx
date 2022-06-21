@@ -16,19 +16,19 @@ export default function SightingsCard({ coords }) {
                 <Link href="/sightings">More</Link>
             </div>
             <div className="row-container">
-                <div className="row" onClick={() => router.push("/sightings?open=yes&limit=off")}>
+                <div className="row" onClick={() => router.push("/sightings?resolved=no&limit=off")}>
                     Unresolved sightings
                     <div className="row-value">{unresolved.length}</div>
                 </div>
-                <div className="row" onClick={() => router.push("/sightings?open=no&limit=off")}>
+                <div className="row" onClick={() => router.push("/sightings?resolved=yes&limit=off")}>
                     Resolved sightings
                     <div className="row-value">{resolved.length}</div>
                 </div>
-                <div className="row" onClick={() => router.push("/sightings?probmax=50&limit=off")}>
+                <div className="row" onClick={() => router.push("/sightings?probmax=49&limit=off")}>
                     Sightings under 50% accuracy
                     <div className="row-value">{lowAccuracy.length}</div>
                 </div>
-                <div className="row" onClick={() => router.push("/sightings?open=both&maxage=1&limit=off")}>
+                <div className="row" onClick={() => router.push("/sightings?resolved=both&maxage=1&limit=off")}>
                     New sightings (last hour)
                     <div className="row-value">{newSightings.length}</div>
                 </div>
