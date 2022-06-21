@@ -10,7 +10,7 @@ function subscribe(subscribed, setSubscribed) {
         return
     }
 
-    var url = "https://localhost:8082/api/subscribe"
+    var url = `http://${location.hostname}:8081/api/subscribe`
     fetch(url, {
         method: 'POST',
         headers: new Headers({
@@ -27,7 +27,7 @@ function subscribe(subscribed, setSubscribed) {
 
 async function isSubscribed() {
     var sub
-    await fetch("https://localhost:8082/api/subscribed", {
+    await fetch(`http://${location.hostname}:8081/api/subscribed`, {
             method: 'GET',
             headers: new Headers({
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
