@@ -28,7 +28,7 @@ namespace Api.Services
             await context.SaveChangesAsync();
         }
 
-        public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time).Take(10);
+        public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time);
 
         public User? VerifyUserLogin(string email, string password)
         {
@@ -57,6 +57,19 @@ namespace Api.Services
             }
 
             return null;
+        }
+
+        public async Task<bool> SetResolvedAsync(Guid guid, bool resolved)
+        {
+            var context = SqliteDbContext.Create();
+
+            if (context.Notifications.FirstOrDefault(x => x.Guid == guid) is Notification notification)
+            {
+                notification.Resolved = resolved;
+                return (await context.SaveChangesAsync()) > 0;
+            }
+
+            return false;
         }
     }
 }
