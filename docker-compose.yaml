@@ -7,5 +7,10 @@ services:
     build: ./Api/
     ports:
       - "8081:8081"
+      - "8443:8443"
     environment:
-      - ASPNETCORE_Kestrel__Certificates__Development__Password="Api123"
+      - ASPNETCORE_URLS=http://+:8081
+      # - ASPNETCORE_Kestrel__Certificates__Development__Password=
+      # - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Api.pfx
+    # volumes:
+    #   - /home/ubuntu-1014106/.aspnet/https:/https:ro
