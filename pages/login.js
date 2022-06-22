@@ -54,6 +54,8 @@ export default class Login extends Component {
                                 </Link>
                             </div>
                         </form>
+                        {this.state.errorMessage &&
+                        <p className='block mx-auto w-fit text-red-500'>{this.state.errorMessage}</p>}
                     </div>
                 </div>
             </div>
