@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  @apply p-0 m-0 font-sans;
+}
+
+a {
+  @apply text-pink-500 underline;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  @apply inline-flex items-center justify-center;
+}
+
+.popup-buttons button {
+  @apply p-2 px-4 rounded-[0.25rem] uppercase;
+}
+
+.material-icons-round {
+  @apply select-none align-middle;
+}
+
+.scrollList span .material-icons-round {
+  @apply text-gray-400 text-xl;
+}
+
+.expandable {
+  @apply h-0 overflow-hidden transition-[height];
+  transition-timing-function: linear;
+}
+
+.expanded {
+  height: 9em;
+}
+
+.chip {
+  @apply inline-block p-[1px] px-2 min-w-[2rem] text-center rounded-full cursor-pointer shadow-[rgba(0,0,0,.25)] shadow-sm bg-gray-800;
+}
+
+.leaflet-container {
+  @apply bg-gray-900 !important;
+}
+
+@media not print {
+  .leaflet-tile {
+    filter: invert(1) hue-rotate(300deg) brightness(1.2) saturate(.7) !important;
+  }
+}
+
+.leaflet-container {
+  @apply w-full h-full rounded-md;
+}
+
+.leaflet-control-zoom {
+  @apply flex flex-col shadow-[rgba(0,0,0,.25)] shadow-lg select-none print:hidden !important;
+}
+
+.leaflet-control-zoom, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+  border: none !important;
+  @apply rounded-full bg-gray-900 !important;
+}
+
+.leaflet-control-zoom-in, .leaflet-control-zoom-out {
+  @apply box-content p-1 text-gray-200 !important;
+}
+
+.leaflet-div-icon {
+  @apply !bg-transparent !border-none !pointer-events-none !cursor-grab;
+  transition-property: width, height, margin;
+  transition-duration: .2s;
+}
+
+.leaflet-div-icon svg {
+  @apply w-full h-full;
+}
+
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin: 3.25px;
+}
+
+.cards {
+  @apply rounded-md bg-gray-900 py-4 grow basis-0 align-middle;
+}
+
+.cards-title {
+  @apply flex justify-between px-5
+}
+
+h1 {
+  @apply text-lg
+}
+
+.cards-title a {
+  @apply text-pink-500
+}
+
+.cards-number {
+  @apply text-center mt-2 text-4xl
+}
+
+.row-container {
+  @apply mt-4
+}
+
+.row {
+  @apply flex justify-between p-5 border-t border-gray-700 last:pb-1 cursor-pointer;
+}
+
+.row-value {
+  @apply text-white/60
+}
+
+.legend div div {
+  @apply flex gap-2 items-center self-start cursor-pointer;
+}
+
+.square {
+  @apply inline-block w-4 h-4;
+}
+
+.VictoryContainer svg {
+  overflow: visible;
+}
+
+.VictoryContainer path {
+  @apply cursor-pointer;
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+  @apply p-5 w-[100%] h-10 my-4 focus:caret-pink-500 bg-white/5 hover:!bg-white/20 focus:bg-white/10 rounded-t-md border-b-2 border-gray-600 focus:border-b-[2px] focus:border-pink-500 focus:outline-none
+
+}
+
+label {
+  @apply select-none text-right;
+}
+
+label::after {
+  content: ":";
+}
+
+input, select {
+  @apply bg-black/50 h-10;
+  accent-color: #EC4899;
+}
+
+input[type=checkbox] {
+  @apply h-6 w-6 mr-1;
+}
+
+input[type=number] {
+  @apply text-right;
+}
+
+.menuProfile > span {
+  @apply !overflow-visible;
+}
+
+.profilePic {
+  @apply rounded-full w-32 mx-auto outline-2 outline-gray-300 outline-offset-4;
+  outline-style: solid;
+}
+
+.backdrop {
+  @apply absolute content-[""] w-full h-full top-0 left-0 pointer-events-none z-9999 transition-opacity;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 24%);
+  transition-duration: .5s;
+}
+
+@media screen(sm) {
+  .backdrop {
+    background: linear-gradient(-20deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 24%);
+  }
+}
+
+::-webkit-scrollbar {
+  @apply w-3 h-3;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 border-4 border-transparent border-solid bg-clip-padding rounded-full;
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-transparent;
+}
