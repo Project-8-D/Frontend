@@ -59,10 +59,10 @@ public class MqttService
 
         if (notification != null)
         {
+            System.Console.WriteLine(JsonSerializer.Serialize(notification));
+            
             await _databaseService.AddNotificationAsync(notification);
             _emailService.MailSubscribers(notification);
-
-            await _databaseService.AddNotificationAsync(notification);
             _webSocketService.SendMessage(JsonSerializer.Serialize(notification, options));
         }
         
