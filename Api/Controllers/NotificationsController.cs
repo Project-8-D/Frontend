@@ -40,10 +40,10 @@ public class NotificationsController : ControllerBase
                 await _databaseService.ToggleSubscription(email);
                 return Ok(email);
             }
-            return BadRequest("doe wel ff email sture pls bb");
+            return BadRequest("No email registered to this account.");
 
         }
-        return BadRequest("doe niet :(");
+        return BadRequest("Invalid bearer token.");
         
     }
 
@@ -65,10 +65,10 @@ public class NotificationsController : ControllerBase
                 return Ok("Not subscribed");
                 
             }
-            return BadRequest("doe wel ff email sture pls bb");
+            return BadRequest("No email registered to this account.");
 
         }
-        return BadRequest("doe niet :(");
+        return BadRequest("Invalid bearer token.");
         
     }
 }
