@@ -9,7 +9,9 @@ import Head from "next/head";
 let socket;
 
 export default function MyApp({ Component, pageProps }) {
-  if (typeof location !== "undefined" && !location.pathname.startsWith("/login") && !localStorage.getItem("token")) {
+  if (typeof location !== "undefined" && !location.pathname.startsWith("/login") &&
+   !location.pathname.startsWith("/resetpassword") && !location.pathname.startsWith("/forgotpassword")
+    && !localStorage.getItem("token")) {
     window.location.pathname = "/login";
   }
 
