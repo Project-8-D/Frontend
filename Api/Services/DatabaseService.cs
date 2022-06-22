@@ -28,6 +28,25 @@ namespace Api.Services
             await context.SaveChangesAsync();
         }
 
+        public User? GetUserByResetCode(string code)
+            => SqliteDbContext.Create().Users.FirstOrDefault(x => x.ResetCode == code);
+        
+        public async Task<bool> SetResetCodeAsync(string email, string code)
+        {
+            var context = SqliteDbContext.Create();
+            
+            if (context.Users.FirstOrDefault(x => x.Email == email) is User user)
+            {
+                user.ResetCode = code;
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
+        }
+
         public IEnumerable<Notification> GetNotifications() => SqliteDbContext.Create().Notifications.OrderByDescending(notification => (long)notification.Time);
 
         public User? VerifyUserLogin(string email, string password)
@@ -66,6 +85,7 @@ namespace Api.Services
             if (context.Users.FirstOrDefault(x => x.Email == email) is User user)
             {
                 user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                user.ResetCode = null;
                 context.Users.Update(user);
 
                 await context.SaveChangesAsync();

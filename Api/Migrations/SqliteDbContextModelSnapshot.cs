@@ -54,6 +54,21 @@ namespace Api.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("Api.Database.Models.Subscriber", b =>
+                {
+                    b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Guid");
+
+                    b.ToTable("Subscribers");
+                });
+
             modelBuilder.Entity("Api.Database.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +82,9 @@ namespace Api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ResetCode")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

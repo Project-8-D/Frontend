@@ -25,7 +25,7 @@ export default class ResetPassword extends Component {
             this.setState({message: "The passwords don't match."})
         }
         else {
-            await fetch("https://localhost:8082/api/resetpassword", {
+            await fetch(`http://${location.hostname}:8081/api/resetpassword`, {
                 method: "POST",
                 credentials: 'include',
                 headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -45,7 +45,7 @@ export default class ResetPassword extends Component {
                     <h1 className="text-7xl">Reset password</h1>
                     <div className="my-16 block mx-auto max-w-[400px]">
                         <form className="block max-w-[400px]" onSubmit={this.handleSubmit}>
-                            <input type="test" name="resetCode" placeholder="Reset code" required onChange={this.handleChange} />
+                            <input type="text" name="resetCode" placeholder="Reset code" required onChange={this.handleChange} />
                             <input type="password" name="password" placeholder="New password" required onChange={this.handleChange} />
                             <input type="password" name="confirmPassword" placeholder="Confirm password" required onChange={this.handleChange} />
                             <div className="block mx-auto w-fit my-8">
