@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 8080",
-    "lint": "next lint"
+    "cypress": "cypress open"
   },
   "dependencies": {
     "next": "^12.1.5",
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
+    "cypress": "^10.2.0",
     "eslint": "8.13.0",
     "eslint-config-next": "12.1.5",
     "postcss": "^8.4.13",
