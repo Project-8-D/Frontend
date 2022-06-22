@@ -58,11 +58,9 @@ public class MqttService
         var notification = JsonSerializer.Deserialize<Notification>(Encoding.UTF8.GetString(args.ApplicationMessage.Payload), options);
 
         if (notification != null)
-        {
+        {            
             await _databaseService.AddNotificationAsync(notification);
             _emailService.MailSubscribers(notification);
-
-            await _databaseService.AddNotificationAsync(notification);
             _webSocketService.SendMessage(JsonSerializer.Serialize(notification, options));
         }
         
