@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -11,11 +11,11 @@
   "profiles": {
     "Api": {
       "commandName": "Project",
-      "launchUrl": "https://localhost:8082/",
+      "launchUrl": "http://localhost:8081/",
       "environmentVariables": {
-        "ASPNETCORE_URLS": "http://*:8081;https://*:8082"
+        "ASPNETCORE_URLS": "http://*:8081;"
       },
-      "applicationUrl": "http://*:8081;https://*:8082",
+      "applicationUrl": "http://*:8081;",
       "dotnetRunMessages": true
     }
   }

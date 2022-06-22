@@ -5,7 +5,6 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY *.csproj .
-RUN dotnet dev-certs https
 RUN dotnet restore
 
 # copy everything else and build app
@@ -17,5 +16,4 @@ RUN dotnet publish -c Release -o /app -r linux-x64 --self-contained false --no-r
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build /app ./
-COPY --from=build /root/.dotnet/corefx/cryptography/x509stores/my/* /root/.dotnet/corefx/cryptography/x509stores/my/
 ENTRYPOINT ["dotnet", "Api.dll"]

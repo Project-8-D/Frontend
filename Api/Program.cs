@@ -10,7 +10,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000","http://www.chengeta.xyz", "http://chengeta.xyz")
+        policy.WithOrigins("http://localhost:3000","http://www.chengeta.xyz", "http://chengeta.xyz", "https://www.chengeta.xyz", "https://chengeta.xyz")
         .AllowCredentials()
         .AllowAnyHeader();
     });
@@ -41,8 +41,6 @@ var app = builder.Build();
 app.Services.GetRequiredService<MqttService>().Start();
 
 app.UseCors();
-
-//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseWebSockets();
