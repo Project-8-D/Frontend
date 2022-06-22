@@ -22,17 +22,23 @@ export default function MyApp({ Component, pageProps }) {
     if (typeof window !== "undefined") {
       token = localStorage.getItem("token");
     }
-    
+
     if (token) {
       fetch(`http://${location.hostname}:8081/api/notifications`, {
         headers: new Headers({
           "Authorization": "Bearer " + token
         })
       })
-        .then(response => response.json())
-        .then(data => {
-          setCoords(data);
-        });
+      .then(response => {
+        if (response.status === 200) {
+          response.json().then(data => {
+            setCoords(data);
+          });
+        } else if (response.status === 401) {
+          localStorage.removeItem("token");
+          location.href = "/login";
+        }
+      });
 
       if (!socket) {
         socket = new WebSocket(`ws://${location.hostname}:8081/ws`);
@@ -57,7 +63,7 @@ export default function MyApp({ Component, pageProps }) {
       <title>Sightings</title>
     </Head>
     <Navbar />
-    <Popup lastNotification={lastNotification}/>
+    <Popup lastNotification={lastNotification} />
     <Component coords={coords} setCoords={setCoords} {...pageProps} />
   </>
 }
@@ -70,7 +76,7 @@ MyApp.getInitialProps = async (appContext) => {
 function spawnNotification(data) {
   const args = ["New Sighting", {
     body:
-`type: ${data.sound_type}
+      `type: ${data.sound_type}
 probability: ${data.probability}%`,
     icon: "./ranger.png",
     image: "./ranger.png"

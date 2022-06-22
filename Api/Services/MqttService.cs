@@ -10,11 +10,13 @@ namespace Api.Services.MqttHandler;
 public class MqttService
 {
     private readonly DatabaseService _databaseService;
+    private readonly EmailService _emailService;
     private readonly WebSocketService _webSocketService;
 
-    public MqttService(DatabaseService databaseService, WebSocketService webSocketService)
+    public MqttService(DatabaseService databaseService, EmailService emailService, WebSocketService webSocketService)
     {
         _databaseService = databaseService;
+        _emailService = emailService;
         _webSocketService = webSocketService;
     }
 
@@ -54,7 +56,16 @@ public class MqttService
     {
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         var notification = JsonSerializer.Deserialize<Notification>(Encoding.UTF8.GetString(args.ApplicationMessage.Payload), options);
-        await _databaseService.AddNotificationAsync(notification);
-        _webSocketService.SendMessage(JsonSerializer.Serialize(notification, options));
+
+        if (notification != null)
+        {
+            await _databaseService.AddNotificationAsync(notification);
+            _emailService.MailSubscribers(notification);
+
+            await _databaseService.AddNotificationAsync(notification);
+            _webSocketService.SendMessage(JsonSerializer.Serialize(notification, options));
+        }
+        
+        
     }
 }

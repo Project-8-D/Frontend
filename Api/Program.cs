@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<MqttService>();
+builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<WebSocketService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
