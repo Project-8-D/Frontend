@@ -15,6 +15,7 @@ export default function PlayButton({ coord, playing, setPlaying }) {
       audio?.pause();
       setAudio(null);
       const a = new Audio(coord?.sound);
+      a.volume = (JSON.parse(localStorage.getItem("settings"))?.volume ?? 100) / 100;
       a.addEventListener("ended", () => setPlaying(null));
       setProgress(0);
       a.addEventListener("timeupdate", () => setProgress(a.currentTime / a.duration * 360));
