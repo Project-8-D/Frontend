@@ -136,7 +136,7 @@ h1 {
   @apply cursor-pointer;
 }
 
-input[type="email"], input[type="password"] {
+input[type="text"], input[type="email"], input[type="password"] {
   @apply p-5 w-[100%] h-10 my-4 focus:caret-pink-500 bg-white/5 hover:!bg-white/20 focus:bg-white/10 rounded-t-md border-b-2 border-gray-600 focus:border-b-[2px] focus:border-pink-500 focus:outline-none
 
 }
