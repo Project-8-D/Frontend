@@ -18,8 +18,8 @@ export default function Popup({ lastNotification, countStart=0 }) {
 
   return (
     <>
-    <div className="backdrop" style={{ opacity: !closed*1 }}></div>
-    <div className={"popup rounded-sm fixed flex flex-col gap-4 right-0 m-4 p-4 w-[calc(100%-2rem)] sm:w-80 bg-gray-800 shadow-[rgba(0,0,0,.25)] shadow-lg z-9999 transition-[top] -bottom-full" + (!closed ? " !bottom-0" : " closed")}>
+    <div className="backdrop print:hidden" style={{ opacity: !closed*1 }}></div>
+    <div className={"print:hidden popup rounded-sm fixed flex flex-col gap-4 right-0 m-4 p-4 w-[calc(100%-2rem)] sm:w-80 bg-gray-800 shadow-[rgba(0,0,0,.25)] shadow-lg z-9999 transition-[top] -bottom-full" + (!closed ? " !bottom-0" : " closed")}>
       <div className="flex">
           <PlayButton coord={lastNotification} playing={playing} setPlaying={setPlaying}/>
           <div>
